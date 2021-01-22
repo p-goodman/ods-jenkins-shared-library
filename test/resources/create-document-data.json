@@ -1,0 +1,84 @@
+{
+    "data": {
+        "sections": {
+            "sec1": {
+                "key": "DOC-1",
+                "version": "1.0",
+                "name": "name",
+                "number": "1",
+                "documents": [
+                    "SSDS",
+                    "DTP",
+                    "CFTP"
+                ],
+                "section": "sec1",
+                "content": "myContent"
+            }
+        },
+        "acceptanceTests": [
+            {
+                "key": "NET-131",
+                "description": "User interacts with the cart",
+                "ur_key": "NET-125",
+                "risk_key": "N/A"
+            },
+            {
+                "key": "NET-133",
+                "description": "User buys some socks",
+                "ur_key": "NET-125",
+                "risk_key": "N/A"
+            },
+            {
+                "key": "NET-132",
+                "description": "User shows catalogue",
+                "ur_key": "NET-125",
+                "risk_key": "N/A"
+            },
+            {
+                "key": "NET-135",
+                "description": "User logs in",
+                "ur_key": "NET-125",
+                "risk_key": "N/A"
+            },
+            {
+                "key": "NET-134",
+                "description": "Home page looks sexy",
+                "ur_key": "NET-125",
+                "risk_key": "N/A"
+            },
+            {
+                "key": "NET-127",
+                "description": "verify payments are executed within the payment SLAs",
+                "ur_key": "NET-125",
+                "risk_key": "N/A"
+            }
+        ],
+        "integrationTests": [
+            {
+                "key": "NET-142",
+                "description": "Cart gets processed correctly.",
+                "ur_key": "NET-125",
+                "risk_key": "N/A"
+            },
+            {
+                "key": "NET-144",
+                "description": "Frontend retrieves payment data correctly.",
+                "ur_key": "NET-125",
+                "risk_key": "N/A"
+            },
+            {
+                "key": "NET-143",
+                "description": "Frontend retrieves cart data correctly.",
+                "ur_key": "NET-125",
+                "risk_key": "N/A"
+            },
+            {
+                "key": "NET-136",
+                "description": "User exists in system",
+                "ur_key": "NET-125",
+                "risk_key": "N/A"
+            }
+        ],
+        "documentHistory": []
+    }
+}

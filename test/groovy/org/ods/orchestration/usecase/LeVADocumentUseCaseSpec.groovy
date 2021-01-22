@@ -662,34 +662,51 @@ class LeVADocumentUseCaseSpec extends SpecHelper {
 
     def "create CFTP"() {
         given:
+        log.info "Using temporal folder:${tempFolder.getRoot()}"
+        steps.env.BUILD_ID = "1"
+        steps.env.WORKSPACE = tempFolder.getRoot().absolutePath
+        FileUtils.copyDirectory(new FixtureHelper().getResource("Test-1.pdf").parentFile, tempFolder.getRoot());
+        def pdfDoc = new FixtureHelper().getResource("Test-1.pdf").bytes
+        def expectedPdfData = new JsonSlurper().parseText(new FixtureHelper().getResource("create-document-data.json").text)
+        def pdfUtil = new PDFUtil()
+        util = Spy(new MROPipelineUtil(project, steps, null, logger))
         jiraUseCase = Spy(new JiraUseCase(project, steps, util, Mock(JiraService), logger))
-        usecase = Spy(new LeVADocumentUseCase(project, steps, util, docGen, jenkins, jiraUseCase, junit, levaFiles, nexus, os, pdf, sq))
+        // When developing: use the real doc generator http://docgen.${project.key}-cd.svc:8080
+        docGen = new DocGenService( "http://172.30.29.103:8080")
+        usecase = Spy(
+            new LeVADocumentUseCase(project, steps, util, docGen, jenkins, jiraUseCase, junit, levaFiles, nexus, os, pdfUtil, sq)
+        )
 
         // Argument Constraints
         def documentType = LeVADocumentUseCase.DocumentType.CFTP as String
 
         // Stubbed Method Responses
         def chapterData = ["sec1": [content: "myContent", status: "DONE"]]
-        def uri = "http://nexus"
+        def uri = new URI("http://nexus")
         def documentTemplate = "template"
         def watermarkText = "WATERMARK"
 
         when:
-        usecase.createCFTP()
+        def answer = usecase.createCFTP()
 
         then:
-        1 * usecase.getDocumentSections(documentType) >> chapterData
-        0 * levaFiles.getDocumentChapterData(documentType)
-        1 * usecase.getWatermarkText(documentType, _) >> watermarkText
-
-        then:
-        1 * usecase.getDocumentTemplateName(documentType) >> documentTemplate
-        1 * project.getAutomatedTestsTypeAcceptance()
-        1 * project.getAutomatedTestsTypeIntegration()
-        1 * usecase.getDocumentMetadata(LeVADocumentUseCase.DOCUMENT_TYPE_NAMES[documentType])
-        1 * usecase.createDocument(documentTemplate, null, _, [:], _, documentType, watermarkText) >> uri
-        1 * usecase.getSectionsNotDone(documentType) >> []
-        1 * usecase.updateJiraDocumentationTrackingIssue(documentType, uri, "${docHistory.getVersion()}")
+        answer == uri.toString()
+        //new File('/tmp/junit12956443183551227403/a.pdf').withOutputStream {         it.write document}
+//
+//        1 * docGen.createDocument(
+//            "CFTP-5",
+//            "1.0",
+//            {
+//                assert it.data== expectedPdfData.data
+//            }
+//        ) >> pdfDoc // TODO replace this pdf with the real expected one
+        1 * nexus.storeArtifact("leva-documentation",
+            "net-WIP",
+            "CFTP-net-WIP-1.zip",
+            !null,
+            "application/zip"
+        ) >> uri
+        1 * usecase.updateJiraDocumentationTrackingIssue(documentType, uri.toString(), "${docHistory.getVersion()}")
     }
 
     def "create CFTR"() {
