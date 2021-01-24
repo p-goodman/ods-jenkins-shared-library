@@ -666,13 +666,12 @@ class LeVADocumentUseCaseSpec extends SpecHelper {
         steps.env.BUILD_ID = "1"
         steps.env.WORKSPACE = tempFolder.getRoot().absolutePath
         FileUtils.copyDirectory(new FixtureHelper().getResource("Test-1.pdf").parentFile, tempFolder.getRoot());
-        def pdfDoc = new FixtureHelper().getResource("Test-1.pdf").bytes
-        def expectedPdfData = new JsonSlurper().parseText(new FixtureHelper().getResource("create-document-data.json").text)
+
         def pdfUtil = new PDFUtil()
         util = Spy(new MROPipelineUtil(project, steps, null, logger))
         jiraUseCase = Spy(new JiraUseCase(project, steps, util, Mock(JiraService), logger))
         // When developing: use the real doc generator http://docgen.${project.key}-cd.svc:8080
-        docGen = new DocGenService( "http://172.30.29.103:8080")
+        //  docGen = new DocGenService( "http://172.30.29.103:8080")
         usecase = Spy(
             new LeVADocumentUseCase(project, steps, util, docGen, jenkins, jiraUseCase, junit, levaFiles, nexus, os, pdfUtil, sq)
         )
@@ -686,20 +685,24 @@ class LeVADocumentUseCaseSpec extends SpecHelper {
         def documentTemplate = "template"
         def watermarkText = "WATERMARK"
 
+        // pdfDoc generated from real service DocGenUseCase.createDocument return, within "Debug":
+        //  new File("${this.steps.env.WORKSPACE}/document.pdf").withOutputStream { it.write document} -> CFTP-net-from-service.pdf
+        byte[] expectedPdfDoc = new FixtureHelper().getResource("expected/docs/CFTP-net-from-service.pdf").bytes
+        def expectedPdfData = new JsonSlurper().parseText(new FixtureHelper().  getResource("expected/create-document-data.json").text)
+
         when:
         def answer = usecase.createCFTP()
 
         then:
         answer == uri.toString()
-        //new File('/tmp/junit12956443183551227403/a.pdf').withOutputStream {         it.write document}
-//
-//        1 * docGen.createDocument(
-//            "CFTP-5",
-//            "1.0",
-//            {
-//                assert it.data== expectedPdfData.data
-//            }
-//        ) >> pdfDoc // TODO replace this pdf with the real expected one
+        // Comment this when working with real Doc service
+        1 * docGen.createDocument(
+            "CFTP-5",
+            "1.0",
+            {
+                assert it.data== expectedPdfData.data
+            }
+        ) >> expectedPdfDoc
         1 * nexus.storeArtifact("leva-documentation",
             "net-WIP",
             "CFTP-net-WIP-1.zip",
@@ -707,6 +710,16 @@ class LeVADocumentUseCaseSpec extends SpecHelper {
             "application/zip"
         ) >> uri
         1 * usecase.updateJiraDocumentationTrackingIssue(documentType, uri.toString(), "${docHistory.getVersion()}")
+        //assertZip("CFTP-net-WIP-1.zip", "CFTP-net-WIP-1.pdf")
+    }
+
+    boolean assertZip(zipName, expectedPdf){
+        def ant = new AntBuilder()
+        ant.unzip(  src: "${tempFolder.getRoot().absolutePath}/${zipName}",
+            dest: tempFolder.getRoot().absolutePath,
+            overwrite: "true" )
+        PDFUtil pdfUtilC = new com.testautomationguru.utility.PDFUtil();
+        pdfUtilC.compare("${tempFolder.getRoot().absolutePath}/${zipName}", "${tempFolder.getRoot().absolutePath}/${expectedPdf}");
     }
 
     def "create CFTR"() {
@@ -985,7 +998,7 @@ class LeVADocumentUseCaseSpec extends SpecHelper {
                                    ["key":"NET-128",
                                     "softwareDesignSpec":"Implement the system using a loosely coupled micro services architecture for improved extensibility and maintainability."
                                    ]]]
-        def expectedDocs =  ["number":"1", "documents":["SSDS"], "section":"sec1", "version":"1.0", "key":"DOC-1", "name": "name", "content":"myContent"]
+        def expectedDocs =  ["number":"1", "documents":["SSDS", "CFTP"], "section":"sec1", "version":"1.0", "key":"DOC-1", "name": "name", "content":"myContent"]
 
         log.info "Using temporal folder:${tempFolder.getRoot()}"
         steps.env.BUILD_ID = "1"

@@ -131,7 +131,7 @@ class FakeProject extends Project {
                     "version": "1.0",
                     "name": "name",
                     "number": "1",
-                    "documents":["SSDS", "DTP", "CFTP"],
+                    "documents":["SSDS", "CFTP"],
                     "section": "sec1",
                     "content": "myContent"
                 ]]
