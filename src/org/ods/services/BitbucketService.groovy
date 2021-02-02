@@ -270,6 +270,7 @@ class BitbucketService {
                 script: """set +x; curl \\
                   --fail \\
                   --silent \\
+                  --show-error \\
                   --request PUT \\
                   --header \"Content-Type: application/json\" \\
                   --header \"${AuthUtil.header(AuthUtil.SCHEME_BASIC, username, password)}\" \\
