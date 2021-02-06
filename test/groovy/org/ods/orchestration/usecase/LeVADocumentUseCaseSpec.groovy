@@ -982,7 +982,7 @@ class LeVADocumentUseCaseSpec extends SpecHelper {
                                "odsRepoType":"ods",
                                "description":"Some description for demo-app-catalogue",
                                "nameOfSoftware":"demo-app-catalogue",
-                               "references":"N/A",
+                                   "references":"N/A",
                                "supplier":"https://github.com/microservices-demo/",
                                "version":"WIP",
                                "requirements":[
