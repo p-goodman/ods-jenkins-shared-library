@@ -1,6 +1,5 @@
 package org.ods.orchestration.usecase
 
-import com.github.tomakehurst.wiremock.core.Options
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import com.github.tomakehurst.wiremock.junit.WireMockRule
@@ -31,6 +30,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*
 
 @Slf4j
 class VersionHistorySpec  extends Specification {
+    public static final String LOCALHOST = "http://localhost"
+    public static final String WIREMOCK_FILES = "test/resources/wiremock"
 
     @Rule
     EnvironmentVariables env = new EnvironmentVariables()
@@ -42,7 +43,7 @@ class VersionHistorySpec  extends Specification {
     public WireMockRule jiraServer = new WireMockRule(
         (WireMockConfiguration
             .wireMockConfig()
-            .withRootDirectory("test/resources/wiremock")
+            .withRootDirectory(WIREMOCK_FILES)
             .dynamicPort()
             .extensions(new ResponseTemplateTransformer(false)))
     )
@@ -51,7 +52,7 @@ class VersionHistorySpec  extends Specification {
     public WireMockRule docGenServer = new WireMockRule(
         (WireMockConfiguration
             .wireMockConfig()
-            .withRootDirectory("test/resources/wiremock")
+            .withRootDirectory(WIREMOCK_FILES)
             .dynamicPort()
             .extensions(new ResponseTemplateTransformer(false)))
     )
@@ -70,7 +71,6 @@ class VersionHistorySpec  extends Specification {
     SonarQubeUseCase sq
     LeVADocumentUseCase usecase
     ILogger logger
-    DocumentHistory docHistory
 
     def setup() {
         log.info "Using temporal folder:${tempFolder.getRoot()}"
@@ -79,27 +79,25 @@ class VersionHistorySpec  extends Specification {
         nexus = Mock(NexusService)
         os = Mock(OpenShiftService)
         sq = Mock(SonarQubeUseCase)
-        jiraServer.stubFor(
-            get(urlEqualTo("/rest/api/2/issue/createmeta/NET/issuetypes"))
+
+        jiraServer.stubFor(get(urlEqualTo("/rest/api/2/issue/createmeta/NET/issuetypes"))
                 .willReturn(aResponse().withStatus(200)
                     .withBodyFile("jira/getIssueTypes.json")));
-        jiraServer.stubFor(
-            get(urlPathMatching("/rest/api/2/issue/createmeta/NET/issuetypes/.*"))
+        jiraServer.stubFor(get(urlPathMatching("/rest/api/2/issue/createmeta/NET/issuetypes/.*"))
                 .willReturn(aResponse().withStatus(200)
                 .withBodyFile("jira/getIssueTypeMetadata-{{request.pathSegments.[7]}}.json")
-                    .withTransformers("response-template")))
-        jiraServer.stubFor(
-            get(urlEqualTo("/rest/api/2/issue/NET-123?fields=customfield_10222"))
+                .withTransformers("response-template")))
+        jiraServer.stubFor(get(urlPathMatching("/rest/api/2/issue/.*"))
+                .withQueryParam("fields", matching("customfield_.*"))
                 .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/customField_10222.json")));
-        jiraServer.stubFor(
-            get(urlEqualTo("/rest/platform/1.0/docgenreports/NET"))
+                .withBodyFile("jira/{{request.query.fields}}.json")
+                 .withTransformers("response-template")))
+        jiraServer.stubFor(get(urlEqualTo("/rest/platform/1.0/docgenreports/NET"))
                 .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/getDocGenData.json")));
-        jiraServer.stubFor(
-            post(urlEqualTo("/rest/api/2/search"))
+                .withBodyFile("jira/getDocGenData.json")));
+        jiraServer.stubFor(post(urlEqualTo("/rest/api/2/search"))
                 .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/searchByJQLQuery.json")));
+                .withBodyFile("jira/searchByJQLQuery.json")));
         jiraServer.stubFor(
             get(urlEqualTo("/rest/api/2/project/NET/versions"))
                 .willReturn(aResponse().withStatus(200)
@@ -107,14 +105,12 @@ class VersionHistorySpec  extends Specification {
 
         // TODO do asserts
         jiraServer.stubFor(
-            post(urlEqualTo("/rest/api/2/issue/NET-123/comment"))
-                .willReturn(aResponse().withStatus(200)));
+            post(urlEqualTo("/rest/api/2/issue/NET-123/comment")).willReturn(aResponse().withStatus(200)));
         jiraServer.stubFor(
-            put(urlEqualTo("/rest/api/2/issue/NET-123"))
-                .willReturn(aResponse().withStatus(204)));
-        docGenServer.stubFor(
-            post(urlEqualTo("/document"))
-                .willReturn(aResponse().withStatus(204)));
+            put(urlEqualTo("/rest/api/2/issue/NET-123")).willReturn(aResponse().withStatus(204)))
+        docGenServer.stubFor(post(urlEqualTo("/document"))
+                .willReturn(aResponse().withStatus(200)
+                    .withBodyFile("docGen/documentWithHistory.json")))
 
         System.setProperty("java.io.tmpdir", tempFolder.getRoot().absolutePath)
         FileUtils.copyDirectory(new FixtureHelper().getResource("Test-1.pdf").parentFile, tempFolder.getRoot());
@@ -124,12 +120,12 @@ class VersionHistorySpec  extends Specification {
         logger = new LoggerStub(true)
 
         jenkins.unstashFilesIntoPath(_, _, "SonarQube Report") >> true
-        project = buildProject() //Spy(buildProject())
-        util = new MROPipelineUtil(project, steps, null, logger) // TODO Spy(new MROPipelineUtil(project, steps, null, logger))
-        docGen = new DocGenService("http://localhost:${docGenServer.port()}")
-        junit = new JUnitTestReportsUseCase(project, steps) // TODO Spy(new JUnitTestReportsUseCase(project, steps))
-        levaFiles = new LeVADocumentChaptersFileService(steps) // TODO Mock(LeVADocumentChaptersFileService)
-        def jiraService = new JiraService("http://localhost:${jiraServer.port()}", "username", "password")
+        project = buildProject()
+        util = new MROPipelineUtil(project, steps, null, logger)
+        docGen = new DocGenService("${LOCALHOST}:${docGenServer.port()}")
+        junit = new JUnitTestReportsUseCase(project, steps)
+        levaFiles = new LeVADocumentChaptersFileService(steps)
+        def jiraService = new JiraService("${LOCALHOST}:${jiraServer.port()}", "username", "password")
         jiraUseCase = new JiraUseCase(project, steps, util, jiraService, logger)
         usecase = new LeVADocumentUseCase(project, steps, util, docGen, jenkins, jiraUseCase, junit, levaFiles, nexus, os, pdfUtil, sq)
         project.load(Mock(GitService), jiraUseCase)
@@ -151,17 +147,7 @@ class VersionHistorySpec  extends Specification {
 
     def "create CFTP"() {
         given:
-        jiraUseCase = Spy(new JiraUseCase(project, steps, util, Mock(JiraService), logger))
-        usecase = Spy(new LeVADocumentUseCase(project, steps, util, docGen, jenkins, jiraUseCase, junit, levaFiles, nexus, os, pdfUtil, sq))
-
-        // Argument Constraints
-        def documentType = LeVADocumentUseCase.DocumentType.CFTP as String
-
-        // Stubbed Method Responses
-        def chapterData = ["sec1": [content: "myContent", status: "DONE"]]
-        def uri = "http://nexus"
-        def documentTemplate = "template"
-        def watermarkText = "WATERMARK"
+        usecase = new LeVADocumentUseCase(project, steps, util, docGen, jenkins, jiraUseCase, junit, levaFiles, nexus, os, pdfUtil, sq)
 
         when:
         usecase.createCFTP()

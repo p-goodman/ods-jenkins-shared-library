@@ -10,13 +10,17 @@ class GenerateJiraJson {
     JiraJsonService jiraJsonService
     JiraService jiraService
 
+
     static void main(String[] args) {
         def projectKey = "T4"
         def version = "1.0"
-        new GenerateJiraJson().start(projectKey, version)
+        def releaseStatusJiraIssueKey = "T4-123"
+        def customFields = ["customfield_10222"]
+// /rest/api/2/issue/T4-108?fields=customfield_10213
+        new GenerateJiraJson().start(projectKey, version, releaseStatusJiraIssueKey, customFields)
     }
 
-    void start(projectKey, version) {
+    void start(projectKey, version, releaseStatusJiraIssueKey, customFields) {
         jiraOutputDirExist()
         jiraJsonService= new JiraJsonService(URL, USER, USER)
         jiraService = new JiraService(URL, USER, USER)
@@ -27,9 +31,13 @@ class GenerateJiraJson {
         generateJsonFile("getVersionsForProject", jiraJsonService.getVersionsForProject(projectKey))
         generateJsonFile("getProject", jiraJsonService.getProject(projectKey))
         generateJsonFile("getProjectVersions", jiraJsonService.getProjectVersions(projectKey))
-        //generateJsonFile("getLabelsFromIssue", jiraService.getLabelsFromIssue(issueIdOrKey))
+        //generateJsonFile("getLabelsFromIssue", jiraJsonService.getLabelsFromIssue(issueIdOrKey))
         getDocumentChapterData(projectKey)
-       // generateJsonFile("getTextFieldsOfIssue", jiraService.getTextFieldsOfIssue(issueIdOrKey, List fields))
+        customFields.each {
+            List field = [it]
+            generateJsonFile(it, jiraJsonService.getTextFieldsOfIssue(releaseStatusJiraIssueKey, field))
+        }
+        generateJsonFile("customfield_10213", jiraJsonService.getTextFieldsOfIssue("T4-108", ["customfield_10213"]))
         //generateJsonFile("getTextFieldsOfIssue", jiraService.isVersionEnabledForDelta(projectKey, versionName))
 
     }
