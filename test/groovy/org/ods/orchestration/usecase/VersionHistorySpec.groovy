@@ -2,6 +2,7 @@ package org.ods.orchestration.usecase
 
 import com.github.tomakehurst.wiremock.core.Options
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
+import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.FileUtils
@@ -39,7 +40,21 @@ class VersionHistorySpec  extends Specification {
 
     @Rule
     public WireMockRule jiraServer = new WireMockRule(
-        (WireMockConfiguration.wireMockConfig().withRootDirectory("test/resources/wiremock").dynamicPort()))
+        (WireMockConfiguration
+            .wireMockConfig()
+            .withRootDirectory("test/resources/wiremock")
+            .dynamicPort()
+            .extensions(new ResponseTemplateTransformer(false)))
+    )
+
+    @Rule
+    public WireMockRule docGenServer = new WireMockRule(
+        (WireMockConfiguration
+            .wireMockConfig()
+            .withRootDirectory("test/resources/wiremock")
+            .dynamicPort()
+            .extensions(new ResponseTemplateTransformer(false)))
+    )
 
     Project project
     IPipelineSteps steps
@@ -67,47 +82,12 @@ class VersionHistorySpec  extends Specification {
         jiraServer.stubFor(
             get(urlEqualTo("/rest/api/2/issue/createmeta/NET/issuetypes"))
                 .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/issueTypes.json")));
+                    .withBodyFile("jira/getIssueTypes.json")));
         jiraServer.stubFor(
-            get(urlEqualTo("/rest/api/2/issue/createmeta/NET/issuetypes/10000"))
+            get(urlPathMatching("/rest/api/2/issue/createmeta/NET/issuetypes/.*"))
                 .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/issueTypes-10000.json")));
-        jiraServer.stubFor(
-            get(urlEqualTo("/rest/api/2/issue/createmeta/NET/issuetypes/10001"))
-                .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/issueTypes-10001.json")));
-        jiraServer.stubFor(
-            get(urlEqualTo("/rest/api/2/issue/createmeta/NET/issuetypes/10102"))
-                .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/issueTypes-10102.json")));
-        jiraServer.stubFor(
-            get(urlEqualTo("/rest/api/2/issue/createmeta/NET/issuetypes/10200"))
-                .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/issueTypes-10200.json")));
-        jiraServer.stubFor(
-            get(urlEqualTo("/rest/api/2/issue/createmeta/NET/issuetypes/10201"))
-                .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/issueTypes-10201.json")));
-        jiraServer.stubFor(
-            get(urlEqualTo("/rest/api/2/issue/createmeta/NET/issuetypes/10202"))
-                .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/issueTypes-10202.json")));
-        jiraServer.stubFor(
-            get(urlEqualTo("/rest/api/2/issue/createmeta/NET/issuetypes/10203"))
-                .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/issueTypes-10203.json")));
-        jiraServer.stubFor(
-            get(urlEqualTo("/rest/api/2/issue/createmeta/NET/issuetypes/10204"))
-                .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/issueTypes-10204.json")));
-        jiraServer.stubFor(
-            get(urlEqualTo("/rest/api/2/issue/createmeta/NET/issuetypes/10205"))
-                .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/issueTypes-10205.json")));
-        jiraServer.stubFor(
-            get(urlEqualTo("/rest/api/2/issue/createmeta/NET/issuetypes/10206"))
-                .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/issueTypes-10206.json")));
+                .withBodyFile("jira/getIssueTypeMetadata-{{request.pathSegments.[7]}}.json")
+                    .withTransformers("response-template")))
         jiraServer.stubFor(
             get(urlEqualTo("/rest/api/2/issue/NET-123?fields=customfield_10222"))
                 .willReturn(aResponse().withStatus(200)
@@ -115,7 +95,26 @@ class VersionHistorySpec  extends Specification {
         jiraServer.stubFor(
             get(urlEqualTo("/rest/platform/1.0/docgenreports/NET"))
                 .willReturn(aResponse().withStatus(200)
-                    .withBodyFile("jira/docgenreports.json")));
+                    .withBodyFile("jira/getDocGenData.json")));
+        jiraServer.stubFor(
+            post(urlEqualTo("/rest/api/2/search"))
+                .willReturn(aResponse().withStatus(200)
+                    .withBodyFile("jira/searchByJQLQuery.json")));
+        jiraServer.stubFor(
+            get(urlEqualTo("/rest/api/2/project/NET/versions"))
+                .willReturn(aResponse().withStatus(200)
+                    .withBodyFile("jira/getProjectVersions.json")));
+
+        // TODO do asserts
+        jiraServer.stubFor(
+            post(urlEqualTo("/rest/api/2/issue/NET-123/comment"))
+                .willReturn(aResponse().withStatus(200)));
+        jiraServer.stubFor(
+            put(urlEqualTo("/rest/api/2/issue/NET-123"))
+                .willReturn(aResponse().withStatus(204)));
+        docGenServer.stubFor(
+            post(urlEqualTo("/document"))
+                .willReturn(aResponse().withStatus(204)));
 
         System.setProperty("java.io.tmpdir", tempFolder.getRoot().absolutePath)
         FileUtils.copyDirectory(new FixtureHelper().getResource("Test-1.pdf").parentFile, tempFolder.getRoot());
@@ -127,7 +126,7 @@ class VersionHistorySpec  extends Specification {
         jenkins.unstashFilesIntoPath(_, _, "SonarQube Report") >> true
         project = buildProject() //Spy(buildProject())
         util = new MROPipelineUtil(project, steps, null, logger) // TODO Spy(new MROPipelineUtil(project, steps, null, logger))
-        docGen = new DocGenService("http://localhost") //TODO Mock(DocGenService)
+        docGen = new DocGenService("http://localhost:${docGenServer.port()}")
         junit = new JUnitTestReportsUseCase(project, steps) // TODO Spy(new JUnitTestReportsUseCase(project, steps))
         levaFiles = new LeVADocumentChaptersFileService(steps) // TODO Mock(LeVADocumentChaptersFileService)
         def jiraService = new JiraService("http://localhost:${jiraServer.port()}", "username", "password")

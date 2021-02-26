@@ -1,39 +1,61 @@
 package util
 
-import groovy.json.JsonSlurperClassic
-import kong.unirest.Unirest
+
 import org.ods.orchestration.service.JiraService
 
 class GenerateJiraJson {
-
     public static final String JIRA_JSON_FILES = "build/tmp/json/jira"
+    public static final String URL = "http://jira.odsbox.lan:8080"
+    public static final String USER = "openshift"
+    JiraJsonService jiraJsonService
+    JiraService jiraService
 
     static void main(String[] args) {
-        def projectKey = ""
-        def version = ""
+        def projectKey = "T4"
+        def version = "1.0"
         new GenerateJiraJson().start(projectKey, version)
     }
 
     void start(projectKey, version) {
         jiraOutputDirExist()
-        def service = new JiraJsonService("", "openshift", "openshift")
+        jiraJsonService= new JiraJsonService(URL, USER, USER)
+        jiraService = new JiraService(URL, USER, USER)
+        generateJsonFile("getDocGenData", jiraJsonService.getDocGenData(projectKey))
+        generateJsonFile("getDeltaDocGenData", jiraJsonService.getDeltaDocGenData(projectKey, version))
+        generateJsonFile("getIssueTypes", jiraJsonService.getIssueTypes(projectKey))
+        generateIssueTypes(projectKey)
+        generateJsonFile("getVersionsForProject", jiraJsonService.getVersionsForProject(projectKey))
+        generateJsonFile("getProject", jiraJsonService.getProject(projectKey))
+        generateJsonFile("getProjectVersions", jiraJsonService.getProjectVersions(projectKey))
+        //generateJsonFile("getLabelsFromIssue", jiraService.getLabelsFromIssue(issueIdOrKey))
+        getDocumentChapterData(projectKey)
+       // generateJsonFile("getTextFieldsOfIssue", jiraService.getTextFieldsOfIssue(issueIdOrKey, List fields))
+        //generateJsonFile("getTextFieldsOfIssue", jiraService.isVersionEnabledForDelta(projectKey, versionName))
 
-        generateJsonFile("getDocGenData", service.getDocGenData(projectKey))
-        generateJsonFile("getDeltaDocGenData", service.getDeltaDocGenData(projectKey, version))
-       // generateJsonFile("getDocGenData", service.getIssueTypeMetadata(projectKey, issueTypeId))
-        generateJsonFile("getIssueTypes", service.getIssueTypes(projectKey))
-        generateJsonFile("getVersionsForProject", service.getVersionsForProject(projectKey))
-        generateJsonFile("getProject", service.getProject(projectKey))
-        generateJsonFile("getProjectVersions", service.getProjectVersions(projectKey))
-        //generateJsonFile("getLabelsFromIssue", service.getLabelsFromIssue(issueIdOrKey))
-        //generateJsonFile("searchByJQLQuery", service.searchByJQLQuery(query))
-       // generateJsonFile("getTextFieldsOfIssue", service.getTextFieldsOfIssue(issueIdOrKey, List fields))
-        //generateJsonFile("getTextFieldsOfIssue", service.isVersionEnabledForDelta(projectKey, versionName))
+    }
+
+    private getDocumentChapterData(projectKey) {
+        def contentField = 'customfield_10209'
+        def headingNumberField = 'customfield_10201'
+        def query = [
+            fields: ['key', 'status', 'summary', 'labels', 'issuelinks', contentField, headingNumberField],
+            jql: "project = ${projectKey} AND issuetype = 'Documentation Chapter'",
+            expand: ['renderedFields'],
+            maxResults:"1000"
+        ]
+        generateJsonFile("searchByJQLQuery", jiraJsonService.searchByJQLQuery(query))
+    }
+
+    private generateIssueTypes(String projectKey) {
+        Map types = jiraService.getIssueTypes(projectKey)
+        types.get("values").each {
+            generateJsonFile("getIssueTypeMetadata-${it.id}", jiraJsonService.getIssueTypeMetadata(projectKey, it.id))
+        }
 
     }
 
     private void generateJsonFile(String fileName, def jsonData) {
-        new File("${JIRA_JSON_FILES}/${fileName}").text = jsonData
+        new File("${JIRA_JSON_FILES}/${fileName}.json").text = jsonData
     }
 
     private void jiraOutputDirExist() {
@@ -41,5 +63,6 @@ class GenerateJiraJson {
         if (json_path.exists()) {
             json_path.deleteDir()
         }
+        json_path.mkdirs()
     }
 }

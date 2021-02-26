@@ -132,7 +132,7 @@ class JiraJsonService {
         ]
     }
 
-    Map getIssueTypeMetadata(String projectKey, String issueTypeId) {
+    def getIssueTypeMetadata(String projectKey, String issueTypeId) {
         def response = Unirest.get("${this.baseURL}/rest/api/2/issue/createmeta/{projectKey}/issuetypes/{issueTypeId}")
             .routeParam('projectKey', projectKey.toUpperCase())
             .routeParam('issueTypeId', issueTypeId)
@@ -153,7 +153,7 @@ class JiraJsonService {
         return response.getBody()
     }
 
-    Map getIssueTypes(String projectKey) {
+    def getIssueTypes(String projectKey) {
         def response = Unirest.get("${this.baseURL}/rest/api/2/issue/createmeta/{projectKey}/issuetypes")
             .routeParam('projectKey', projectKey.toUpperCase())
             .basicAuth(this.username, this.password)
