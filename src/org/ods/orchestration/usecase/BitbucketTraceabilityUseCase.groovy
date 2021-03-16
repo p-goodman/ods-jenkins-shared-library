@@ -69,7 +69,7 @@ class BitbucketTraceabilityUseCase {
     }
 
     private void writeCSVRecord(File file, Record record) {
-        file.write record.toString()
+        file << record.toString()
     }
 
     private Developer getAuthor(Map author) {
@@ -103,7 +103,7 @@ class BitbucketTraceabilityUseCase {
 
         @Override
         String toString() {
-            return date + CSV + author + CSV + reviewersAsList() + CSV + mergeRequestURL + CSV + mergeCommitSHA + CSV + componentName
+            return date + CSV + author + CSV + reviewersAsList() + CSV + mergeRequestURL + CSV + mergeCommitSHA + CSV + componentName + "\n"
         }
     }
 
