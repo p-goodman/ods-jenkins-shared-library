@@ -60,6 +60,7 @@ class BitbucketTraceabilityUseCase {
                     .date(getDateWithFormat(commit.committerTimestamp))
                     .author(getAuthor(commit.author))
                     .reviewers(getReviewers(mergedPR.values[0]?.reviewers))
+                    .mergeRequestURL(mergedPR.values[0]?.links?.self?.getAt(0)?.href)
                     .mergeCommitSHA(commit.id)
                     .componentName(repo)
                     .build()
