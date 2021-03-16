@@ -56,11 +56,10 @@ class BitbucketTraceabilityUseCase {
     private void processCommits(String token, String repo, Map commits, File file) {
         commits.values.each { commit ->
             Map mergedPR = bitbucketService.getPRforMergedCommit(token, repo, commit.id)
-            // mergedPR.values[0].reviewers.approved
-            // mergedPR.values[0].reviewers.user
             def record = new RecordBuilder()
                     .date(getDateWithFormat(commit.committerTimestamp))
                     .author(getAuthor(commit.author))
+                    .reviewers(getReviewers(mergedPR.values[0]?.reviewers))
                     .mergeCommitSHA(commit.id)
                     .componentName(repo)
                     .build()
@@ -74,6 +73,17 @@ class BitbucketTraceabilityUseCase {
 
     private Developer getAuthor(Map author) {
         return new DeveloperBuilder().name(author.name).mail(author.emailAddress).build()
+    }
+
+    private List getReviewers(List reviewers) {
+        List<Developer> approvals = []
+        reviewers.each {
+            if(it.approved) {
+                approvals << new DeveloperBuilder().name(it.user.name).mail(it.user.emailAddress).build()
+            }
+        }
+
+        return approvals
     }
 
     private String getDateWithFormat(Long timestamp) {
@@ -94,7 +104,7 @@ class BitbucketTraceabilityUseCase {
         String reviewersAsList() {
             String reviewersList = ""
             if (reviewers && reviewers.size()>0) {
-                def reviewerListString = reviewersList.toString()
+                def reviewerListString = reviewers.toString()
                 reviewersList = reviewerListString.substring(1, reviewerListString.length() - 1);
             }
 
