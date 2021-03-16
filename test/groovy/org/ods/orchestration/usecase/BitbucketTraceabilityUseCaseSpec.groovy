@@ -23,6 +23,7 @@ class BitbucketTraceabilityUseCaseSpec extends Specification {
     private static final Boolean RECORD_WIREMOCK = true
     private static final String BB_URL_TO_RECORD = ""
     private static final String BB_TOKEN = ""
+    private static final String PROJECT = "EDPC"
 
     @Rule
     public TemporaryFolder tempFolder
@@ -43,7 +44,7 @@ class BitbucketTraceabilityUseCaseSpec extends Specification {
                 new BitbucketService(
                         null,
                         bitbucketServiceMock.getWireMockServer().baseUrl(),
-                        "EDPC",
+                        PROJECT,
                         "passwordCredentialsId",
                         logger))
         bitbucketService.getToken() >> BB_TOKEN
