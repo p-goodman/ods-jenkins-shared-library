@@ -56,7 +56,9 @@ class BitbucketTraceabilityUseCase {
     private void processCommits(String token, String repo, Map commits, File file) {
         commits.values.each { commit ->
             Map mergedPR = bitbucketService.getPRforMergedCommit(token, repo, commit.id)
-            def record = new RecordBuilder()
+            // Only changes in PR
+            if(mergedPR.values) {
+                def record = new RecordBuilder()
                     .date(getDateWithFormat(commit.committerTimestamp))
                     .author(getAuthor(commit.author))
                     .reviewers(getReviewers(mergedPR.values[0]?.reviewers))
@@ -64,7 +66,8 @@ class BitbucketTraceabilityUseCase {
                     .mergeCommitSHA(commit.id)
                     .componentName(repo)
                     .build()
-            writeCSVRecord(file, record)
+                writeCSVRecord(file, record)
+            }
         }
     }
 
@@ -122,7 +125,7 @@ class BitbucketTraceabilityUseCase {
     private class RecordBuilder {}
 
     private class Developer {
-        public static final String FIELD_SEPARATOR = ','
+        public static final String FIELD_SEPARATOR = ';'
         String name
         String mail
 
