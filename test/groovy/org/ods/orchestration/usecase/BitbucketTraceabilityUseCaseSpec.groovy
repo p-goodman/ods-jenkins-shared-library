@@ -4,6 +4,7 @@ import groovy.util.logging.Slf4j
 import org.apache.commons.io.FileUtils
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
+import org.ods.orchestration.util.Project
 import org.ods.services.BitbucketService
 import org.ods.util.ILogger
 import org.ods.util.IPipelineSteps
@@ -20,16 +21,18 @@ class BitbucketTraceabilityUseCaseSpec extends Specification {
     private static final String EXPECTED_BITBUCKET_CSV = "expected/bitbucket.csv"
 
     // Change for local development or CI testing
-    private static final Boolean RECORD_WIREMOCK = true
-    private static final String BB_URL_TO_RECORD = ""
+    private static final Boolean RECORD_WIREMOCK = false
+    private static final String BB_URL_TO_RECORD = "http://bitbucket.odsbox.lan:7990/"
+    // project-readonly-user
     private static final String BB_TOKEN = ""
-    private static final String PROJECT = "EDPC"
+    private static final String PROJECT_KEY = "EDPT3"
 
     @Rule
     public TemporaryFolder tempFolder
 
     BitbucketServiceMock bitbucketServiceMock
     IPipelineSteps steps
+    Project project
     ILogger logger
     BitbucketService bitbucketService
 
@@ -39,15 +42,33 @@ class BitbucketTraceabilityUseCaseSpec extends Specification {
         steps = new PipelineSteps()
         steps.env.WORKSPACE = tempFolder.getRoot().absolutePath
         logger = new LoggerStub(log)
+        project = buildProject(logger)
         bitbucketServiceMock = new BitbucketServiceMock().setUp("csv").startServer(RECORD_WIREMOCK, BB_URL_TO_RECORD)
         bitbucketService = Spy(
                 new BitbucketService(
                         null,
                         bitbucketServiceMock.getWireMockServer().baseUrl(),
-                        PROJECT,
+                        PROJECT_KEY,
                         "passwordCredentialsId",
                         logger))
         bitbucketService.getToken() >> BB_TOKEN
+    }
+
+    def buildProject(logger) {
+        FileUtils.copyDirectory(new FixtureHelper().getResource("workspace/metadata.yml").parentFile, tempFolder.getRoot())
+
+        steps.env.BUILD_ID = "1"
+        steps.env.WORKSPACE = "${tempFolder.getRoot().absolutePath}"
+
+        def project = new Project(steps, logger, [:]).init()
+        project.data.metadata.id = PROJECT_KEY
+        project.data.buildParams = [:]
+        project.data.buildParams.targetEnvironment = "dev"
+        project.data.buildParams.targetEnvironmentToken = "D"
+        project.data.buildParams.version = "WIP"
+        project.data.buildParams.releaseStatusJiraIssueKey = "${PROJECT_KEY}-123"
+        project.getOpenShiftApiUrl() >> 'https://api.dev-openshift.com'
+        return project
     }
 
     def cleanup() {
@@ -56,7 +77,7 @@ class BitbucketTraceabilityUseCaseSpec extends Specification {
 
     def "Generate the csv source code review file"() {
         given: "There are two Bitbucket repositories"
-        def useCase = new BitbucketTraceabilityUseCase(bitbucketService, steps)
+        def useCase = new BitbucketTraceabilityUseCase(bitbucketService, steps, project)
 
         when: "the source code review file is generated"
         def actualFile = useCase.generateSourceCodeReviewFile()
