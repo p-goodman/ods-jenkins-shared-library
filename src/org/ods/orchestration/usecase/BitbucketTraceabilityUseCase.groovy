@@ -54,8 +54,11 @@ class BitbucketTraceabilityUseCase {
 
     List<String> getRepositories() {
         List<String> result = []
-        this.project.getRepositories().url.each {
-            result << it.replaceAll(".git", "")
+        this.project.getRepositories().url.each { String repo ->
+            if(repo.lastIndexOf("/")>=0){
+                repo = repo.substring(repo.lastIndexOf("/"))
+            }
+            result << repo.replaceAll(".git", "")
         }
         return result
     }
