@@ -65,14 +65,12 @@ class BitbucketTraceabilityUseCase {
             Map mergedPR = bitbucketService.getPRforMergedCommit(token, repo, commit.id)
             // Only changes in PR
             if(mergedPR.values) {
-                def record = new RecordBuilder()
-                    .date(getDateWithFormat(commit.committerTimestamp))
-                    .author(getAuthor(commit.author))
-                    .reviewers(getReviewers(mergedPR.values[0]?.reviewers))
-                    .mergeRequestURL(mergedPR.values[0]?.links?.self?.getAt(0)?.href)
-                    .mergeCommitSHA(commit.id)
-                    .componentName(repo)
-                    .build()
+                def record = new Record(getDateWithFormat(commit.committerTimestamp),
+                    getAuthor(commit.author),
+                    getReviewers(mergedPR.values[0]?.reviewers),
+                    mergedPR.values[0]?.links?.self?.getAt(0)?.href,
+                    commit.id,
+                    repo)
                 writeCSVRecord(file, record)
             }
         }
@@ -83,14 +81,14 @@ class BitbucketTraceabilityUseCase {
     }
 
     private Developer getAuthor(Map author) {
-        return new DeveloperBuilder().name(author.name).mail(author.emailAddress).build()
+        return new Developer(author.name, author.emailAddress)
     }
 
     private List getReviewers(List reviewers) {
         List<Developer> approvals = []
         reviewers.each {
             if(it.approved) {
-                approvals << new DeveloperBuilder().name(it.user.name).mail(it.user.emailAddress).build()
+                approvals << new Developer(it.user.name, it.user.emailAddress)
             }
         }
 
@@ -112,6 +110,15 @@ class BitbucketTraceabilityUseCase {
         String mergeCommitSHA
         String componentName
 
+        Record(String date, Developer author, List<Developer> reviewers, String mergeRequestURL, String mergeCommitSHA, String componentName) {
+            this.date = date
+            this.author = author
+            this.reviewers = reviewers
+            this.mergeRequestURL = mergeRequestURL
+            this.mergeCommitSHA = mergeCommitSHA
+            this.componentName = componentName
+        }
+
         String reviewersAsList() {
             String reviewersList = ""
             if (reviewers && reviewers.size()>0) {
@@ -127,21 +134,26 @@ class BitbucketTraceabilityUseCase {
             return date + CSV + author + CSV + reviewersAsList() + CSV + mergeRequestURL + CSV + mergeCommitSHA + CSV + componentName + "\n"
         }
     }
-
+/*
     @Builder(builderStrategy = ExternalStrategy, forClass = Record)
     private class RecordBuilder {}
-
+*/
     private class Developer {
         public static final String FIELD_SEPARATOR = ';'
         String name
         String mail
+
+        Developer(String name, String mail) {
+            this.name = name
+            this.mail = mail
+        }
 
         @Override
         String toString() {
             return name + FIELD_SEPARATOR + mail
         }
     }
-
+/*
     @Builder(builderStrategy = ExternalStrategy, forClass = Developer)
-    private class DeveloperBuilder {}
+    private class DeveloperBuilder {}*/
 }
