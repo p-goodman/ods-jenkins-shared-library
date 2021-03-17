@@ -53,7 +53,11 @@ class BitbucketTraceabilityUseCase {
     }
 
     List<String> getRepositories() {
-        return this.project.getRepositories().url*.replaceAll((".git"),(""))
+        List<String> result = []
+        this.project.getRepositories().url.each {
+            result << it.replaceAll(".git", "")
+        }
+        return result
     }
 
     private void processCommits(String token, String repo, Map commits, File file) {
