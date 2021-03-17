@@ -2,6 +2,7 @@ package org.ods.orchestration.usecase
 
 import groovy.transform.builder.Builder
 import groovy.transform.builder.ExternalStrategy
+import org.ods.orchestration.util.Project
 import org.ods.services.BitbucketService
 import org.ods.util.IPipelineSteps
 
@@ -13,9 +14,11 @@ class BitbucketTraceabilityUseCase {
 
     private BitbucketService bitbucketService
     private IPipelineSteps steps
+    private Project project
 
-    BitbucketTraceabilityUseCase(BitbucketService bitbucketService, IPipelineSteps steps){
+    BitbucketTraceabilityUseCase(BitbucketService bitbucketService, IPipelineSteps steps, Project project){
         this.steps = steps
+        this.project = project
         this.bitbucketService = bitbucketService
     }
 
@@ -38,7 +41,7 @@ class BitbucketTraceabilityUseCase {
     private void processRepo(String token, String repo, File file) {
         def nextPage = true
         def nextPageStart = 0
-        while (nextPage && nextPageStart < 30) { // TODO remove && nextPageStart < 30
+        while (nextPage) {
             def commits = bitbucketService.getCommitsForMainBranch(token, repo, PAGE_LIMIT, nextPageStart)
             if (commits.isLastPage) {
                 nextPage = false
@@ -50,7 +53,7 @@ class BitbucketTraceabilityUseCase {
     }
 
     List<String> getRepositories() {
-        ["edp-e2e-tests"] // TODO remove
+        return this.project.getRepositories().url*.replaceAll((".git"),(""))
     }
 
     private void processCommits(String token, String repo, Map commits, File file) {
