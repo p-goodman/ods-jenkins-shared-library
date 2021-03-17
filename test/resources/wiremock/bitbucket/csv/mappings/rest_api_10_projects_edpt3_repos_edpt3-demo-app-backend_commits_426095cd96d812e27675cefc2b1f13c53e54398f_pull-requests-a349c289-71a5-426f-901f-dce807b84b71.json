@@ -1,0 +1,27 @@
+{
+  "id" : "a349c289-71a5-426f-901f-dce807b84b71",
+  "name" : "rest_api_10_projects_edpt3_repos_edpt3-demo-app-backend_commits_426095cd96d812e27675cefc2b1f13c53e54398f_pull-requests",
+  "request" : {
+    "url" : "/rest/api/1.0/projects/EDPT3/repos/edpt3-demo-app-backend/commits/426095cd96d812e27675cefc2b1f13c53e54398f/pull-requests",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"size\":0,\"limit\":25,\"isLastPage\":true,\"values\":[],\"start\":0}",
+    "headers" : {
+      "X-AREQUESTID" : "@1RZ6BQ7x653x159623x0",
+      "X-ASESSIONID" : "37b7qq",
+      "X-ASEN" : "SEN-L15041064",
+      "X-AUSERID" : "60",
+      "X-AUSERNAME" : "project-readonly-user",
+      "Cache-Control" : "no-cache, no-transform",
+      "Vary" : "accept-encoding,x-auserid,cookie,x-ausername,accept-encoding",
+      "X-Content-Type-Options" : "nosniff",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Wed, 17 Mar 2021 10:53:57 GMT"
+    }
+  },
+  "uuid" : "a349c289-71a5-426f-901f-dce807b84b71",
+  "persistent" : true,
+  "insertionIndex" : 19
+}
