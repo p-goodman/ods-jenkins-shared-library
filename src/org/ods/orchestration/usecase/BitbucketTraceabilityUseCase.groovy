@@ -35,18 +35,18 @@ class BitbucketTraceabilityUseCase {
         file.createNewFile()
 
         def token = bitbucketService.getToken()
-        List<String> repos = getRepositories()
+        List<Map> repos = getRepositories()
         repos.each {
             processRepo(token, it, file)
         }
         return file.absolutePath
     }
 
-    private void processRepo(String token, String repo, File file) {
+    private void processRepo(String token, Map repo, File file) {
         def nextPage = true
         def nextPageStart = 0
         while (nextPage) {
-            def commits = bitbucketService.getCommitsForMainBranch(token, repo, PAGE_LIMIT, nextPageStart)
+            def commits = bitbucketService.getCommitsForMainBranch(token, repo.repo, PAGE_LIMIT, nextPageStart)
             if (commits.isLastPage) {
                 nextPage = false
             } else {
@@ -56,28 +56,26 @@ class BitbucketTraceabilityUseCase {
         }
     }
 
-    private List<String> getRepositories() {
-        List<String> result = []
-        this.project.getRepositories().url.each { String repo ->
-            if (repo.lastIndexOf("/") >= 0) {
-                repo = repo.substring(repo.lastIndexOf("/") + 1)
-            }
-            result << repo.replaceAll(".git", "")
+    private List<Map> getRepositories() {
+        List<Map> result = []
+        this.project.getRepositories().each {repository ->
+            result << [repo: "${project.data.metadata.id.toLowerCase()}-${repository.id}", branch: repository.branch]
         }
         return result
     }
 
-    private void processCommits(String token, String repo, Map commits, File file) {
+    private void processCommits(String token, Map repo, Map commits, File file) {
         commits.values.each { commit ->
-            Map mergedPR = bitbucketService.getPRforMergedCommit(token, repo, commit.id)
-            // Only changes in PR
-            if (mergedPR.values) {
+            Map mergedPR = bitbucketService.getPRforMergedCommit(token, repo.repo, commit.id)
+            // Only changes in PR and destiny integration branch
+            if (mergedPR.values
+                && mergedPR.values[0].toRef.displayId == repo.branch) {
                 def record = new Record(getDateWithFormat(commit.committerTimestamp),
                     getAuthor(commit.author),
                     getReviewers(mergedPR.values[0].reviewers),
                     mergedPR.values[0].links.self[(0)].href,
                     commit.id,
-                    repo)
+                    repo.repo)
                 writeCSVRecord(file, record)
             }
         }
