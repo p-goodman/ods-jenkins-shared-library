@@ -149,7 +149,7 @@ class BitbucketTraceabilityUseCase {
             record+= componentName
             record+= END_LINE
 */
-            return commitDate + CSV + author + END_LINE
+            return "${commitDate}${CSV}${author}${END_LINE}"
         }
 
     }
