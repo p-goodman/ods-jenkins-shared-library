@@ -110,7 +110,9 @@ class LeVADocumentUseCase extends DocGenUseCase {
 
     @SuppressWarnings('CyclomaticComplexity')
     String createCSD(Map repo = null, Map data = null) {
-        def documentType = DocumentType.CSD as String
+        def documentType = DocumentType.CSD as
+
+        this.bbt.generateSourceCodeReviewFile()
 
         def sections = this.getDocumentSections(documentType)
         def watermarkText = this.getWatermarkText(documentType, this.project.hasWipJiraIssues())
@@ -858,7 +860,7 @@ class LeVADocumentUseCase extends DocGenUseCase {
     String createSSDS(Map repo = null, Map data = null) {
         def documentType = DocumentType.SSDS as String
 
-        this.bbt.generateSourceCodeReviewFile()
+        //this.bbt.generateSourceCodeReviewFile()
 
         def sections = this.getDocumentSections(documentType)
         def watermarkText = this.getWatermarkText(documentType, this.project.hasWipJiraIssues())
