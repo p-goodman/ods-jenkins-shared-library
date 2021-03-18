@@ -9,7 +9,6 @@ import org.ods.services.BitbucketService
 import org.ods.util.ILogger
 import org.ods.util.IPipelineSteps
 import spock.lang.Specification
-import util.FakeProject
 import util.FixtureHelper
 import util.LoggerStub
 import util.PipelineSteps
@@ -61,7 +60,7 @@ class BitbucketTraceabilityUseCaseSpec extends Specification {
         steps.env.BUILD_ID = "1"
         steps.env.WORKSPACE = "${tempFolder.getRoot().absolutePath}"
 
-        def project = new FakeProject(steps, logger, [:])
+        def project = new Project(steps, logger, [:])
         project.data.metadata = project.loadMetadata("metadata.yml")
         project.data.metadata.id = PROJECT_KEY
         project.data.buildParams = [:]
