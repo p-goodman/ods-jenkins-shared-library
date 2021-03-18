@@ -327,9 +327,6 @@ class BitbucketService {
                     "'${response.getStatus()}' and message: '${response.getBody()}'."
             throw new RuntimeException(message)
         }
-        script.println "********************************************"
-        script.println response.getBody()
-        script.println "********************************************"
 
         return new JsonSlurperClassic().parseText(response.getBody())
     }

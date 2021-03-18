@@ -82,6 +82,9 @@ class BitbucketTraceabilityUseCase {
     }
 
     private void writeCSVRecord(File file, Record record) {
+        // Jenkins has his own idea how to concatenate Strings
+        // Nor '' + '', nor "${}${}", nor StringBuilder nor StringBuffer works properly to
+        // get a record entry set in an only String, this is the best approach that works as expected.
         file << record.commitDate
         file << record.CSV
         file << record.author.name
@@ -149,26 +152,17 @@ class BitbucketTraceabilityUseCase {
             this.componentName = componentName
         }
 
-        String reviewersAsList() {
-            return reviewers.join(REVIEWERS_DELIMITER)
-        }
-
     }
 
     private class Developer {
 
-        public static final String FIELD_SEPARATOR = '|'
+        static final String FIELD_SEPARATOR = '|'
         String name
         String mail
 
         Developer(String name, String mail) {
             this.name = name
             this.mail = mail
-        }
-
-        @Override
-        String toString() {
-            return name + FIELD_SEPARATOR + mail
         }
 
     }
