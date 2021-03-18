@@ -27,6 +27,7 @@ class BitbucketTraceabilityUseCase {
      * for every merge event into the integration branch of every ODS component:
      * @return absolutePath of the created file
      */
+    @SuppressWarnings(['JavaIoPackageAccess'])
     String generateSourceCodeReviewFile(){
         def file = new File("${steps.env.WORKSPACE}/${CSV_FILE}")
 
@@ -100,7 +101,7 @@ class BitbucketTraceabilityUseCase {
 
     private String getDateWithFormat(Long timestamp) {
         Date dateObj =  new Date(timestamp)
-        return new SimpleDateFormat('yyyy-MM-dd').format(dateObj)
+        return new SimpleDateFormat('yyyy-MM-dd', Locale.getDefault()).format(dateObj)
     }
 
     private class Record {
@@ -113,7 +114,9 @@ class BitbucketTraceabilityUseCase {
         String mergeCommitSHA
         String componentName
 
-        Record(String date, Developer author, List<Developer> reviewers, String mergeRequestURL, String mergeCommitSHA, String componentName) {
+        @SuppressWarnings(['ParameterCount'])
+        Record(String date, Developer author, List<Developer> reviewers, String mergeRequestURL,
+               String mergeCommitSHA, String componentName) {
             this.date = date
             this.author = author
             this.reviewers = reviewers
@@ -134,7 +137,8 @@ class BitbucketTraceabilityUseCase {
 
         @Override
         String toString() {
-            return date + CSV + author + CSV + reviewersAsList() + CSV + mergeRequestURL + CSV + mergeCommitSHA + CSV + componentName + "\n"
+            return date + CSV + author + CSV + reviewersAsList() + CSV +
+                mergeRequestURL + CSV + mergeCommitSHA + CSV + componentName + "\n"
         }
     }
 /*
