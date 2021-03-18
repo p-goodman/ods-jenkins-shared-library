@@ -306,17 +306,20 @@ class BitbucketService {
 
     @NonCPS
     Map getPRforMergedCommit(String token, String repo, String commit) {
-        String request = "${bitbucketUrl}/rest/api/1.0/projects/${project}/repos/${repo}/commits/${commit}/pull-requests"
+        String request = "${bitbucketUrl}/rest/api/1.0/projects/${project}" +
+            "/repos/${repo}/commits/${commit}/pull-requests"
         return queryRepo(token, request, 0, 0)
     }
 
     private Map queryRepo(String token, String request, int limit, int nextPageStart) {
-        HashMap<String, String> headers = buildHeaders(token)
+        Map<String, String> headers = buildHeaders(token)
         def httpRequest = Unirest.get(request).headers(headers)
-        if (limit>0)
+        if (limit>0) {
             httpRequest.queryString("limit", limit)
-        if (nextPageStart>0)
+        }
+        if (nextPageStart>0) {
             httpRequest.queryString("start", nextPageStart)
+        }
         def response = httpRequest.asString()
 
         response.ifFailure {
@@ -328,8 +331,8 @@ class BitbucketService {
         return new JsonSlurperClassic().parseText(response.getBody())
     }
 
-    private HashMap<String, String> buildHeaders(String token) {
-        Map<String, String> headers = new HashMap<>()
+    private Map<String, String> buildHeaders(String token) {
+        Map<String, String> headers = [:]
         headers.put("accept", "application/json")
         headers.put("Authorization", "Bearer ".concat(token))
         return headers
