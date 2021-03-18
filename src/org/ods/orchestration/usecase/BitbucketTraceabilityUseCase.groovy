@@ -107,9 +107,9 @@ class BitbucketTraceabilityUseCase {
 
     private class Record {
 
-        static final String CSV = ","
-        static final String REVIEWERS_DELIMITER = ";"
-        static final String END_LINE = "\n"
+        static final String CSV = ','
+        static final String REVIEWERS_DELIMITER = ';'
+        static final String END_LINE = '\n'
 
         String commitDate
         Developer author
@@ -135,7 +135,7 @@ class BitbucketTraceabilityUseCase {
 
         @Override
         String toString() {
-            def record = new StringBuffer("")
+            StringBuilder record = new StringBuilder("")
                 record.append(commitDate).append(CSV).append(author).append(CSV)
                 .append(reviewersAsList()).append(CSV).append(mergeRequestURL).append(CSV)
                 .append(mergeCommitSHA).append(CSV).append(componentName).append(END_LINE)
