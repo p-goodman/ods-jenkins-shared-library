@@ -110,7 +110,7 @@ class LeVADocumentUseCase extends DocGenUseCase {
 
     @SuppressWarnings('CyclomaticComplexity')
     String createCSD(Map repo = null, Map data = null) {
-        def documentType = DocumentType.CSD as
+        def documentType = DocumentType.CSD as String
 
         this.bbt.generateSourceCodeReviewFile()
 

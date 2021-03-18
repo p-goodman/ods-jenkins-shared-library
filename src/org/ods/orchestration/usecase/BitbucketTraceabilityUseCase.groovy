@@ -108,7 +108,8 @@ class BitbucketTraceabilityUseCase {
     private class Record {
 
         static final String CSV = ","
-        public static final String REVIEWERS_SEPARATOR = ';'
+        static final String REVIEWERS_DELIMITER = ';'
+        static final String END_LINE = "\n"
 
         String commitDate
         Developer author
@@ -129,13 +130,14 @@ class BitbucketTraceabilityUseCase {
         }
 
         String reviewersAsList() {
-            return reviewers.join(REVIEWERS_SEPARATOR)
+            return reviewers.join(REVIEWERS_DELIMITER)
         }
 
         @Override
         String toString() {
-            return componentName + CSV + commitDate + CSV + author + CSV + reviewersAsList() + CSV +
-                mergeRequestURL + CSV + mergeCommitSHA + CSV + componentName + "\n"
+            return componentName.concat(CSV).concat(commitDate).concat(CSV).concat(author)
+                .concat(CSV).concat(reviewersAsList()).concat(CSV).concat(mergeRequestURL)
+                .concat(CSV).concat(mergeCommitSHA).concat(CSV).concat(componentName).concat(END_LINE)
         }
 
     }
