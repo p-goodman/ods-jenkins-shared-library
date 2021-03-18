@@ -84,9 +84,18 @@ class BitbucketTraceabilityUseCase {
     private void writeCSVRecord(File file, Record record) {
         file << record.commitDate
         file << record.CSV
-        file << record.author
+        file << record.author.name
+        file << record.author.FIELD_SEPARATOR
+        file << record.author.mail
         file << record.CSV
-        file << record.reviewersAsList()
+        record.reviewers.each {reviewer ->
+            file << reviewer.name
+            file << reviewer.FIELD_SEPARATOR
+            file << reviewer.mail
+            if (reviewer != record.reviewers.last()) {
+                file << record.REVIEWERS_DELIMITER
+            }
+        }
         file << record.CSV
         file << record.mergeRequestURL
         file << record.CSV
@@ -142,25 +151,6 @@ class BitbucketTraceabilityUseCase {
 
         String reviewersAsList() {
             return reviewers.join(REVIEWERS_DELIMITER)
-        }
-
-        @Override
-        String toString() {
-            /*
-            String record = new String(commitDate)
-            record+= CSV
-            record+= author
-            record+= CSV
-            record+= reviewersAsList()
-            record+= CSV
-            record+= mergeRequestURL
-            record+= CSV
-            record+= mergeCommitSHA
-            record+= CSV
-            record+= componentName
-            record+= END_LINE
-*/
-            return this.commitDate + this.author + END_LINE
         }
 
     }
