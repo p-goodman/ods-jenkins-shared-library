@@ -1,7 +1,5 @@
 package org.ods.orchestration.usecase
 
-import groovy.transform.builder.Builder
-import groovy.transform.builder.ExternalStrategy
 import org.ods.orchestration.util.Project
 import org.ods.services.BitbucketService
 import org.ods.util.IPipelineSteps
