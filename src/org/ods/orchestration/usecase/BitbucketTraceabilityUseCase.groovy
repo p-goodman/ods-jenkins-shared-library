@@ -108,7 +108,7 @@ class BitbucketTraceabilityUseCase {
         static final String CSV = ","
         public static final String REVIEWERS_SEPARATOR = ';'
 
-        String date
+        String commitDate
         Developer author
         List<Developer> reviewers
         String mergeRequestURL
@@ -118,7 +118,7 @@ class BitbucketTraceabilityUseCase {
         @SuppressWarnings(['ParameterCount'])
         Record(String date, Developer author, List<Developer> reviewers, String mergeRequestURL,
                String mergeCommitSHA, String componentName) {
-            this.date = date
+            this.commitDate = date
             this.author = author
             this.reviewers = reviewers
             this.mergeRequestURL = mergeRequestURL
@@ -127,17 +127,12 @@ class BitbucketTraceabilityUseCase {
         }
 
         String reviewersAsList() {
-            String reviewersList = ""
-            if (reviewers && reviewers.size() > 0) {
-                reviewers.collect { reviewersList += "${it}${REVIEWERS_SEPARATOR}" }
-                reviewersList = reviewersList.substring(0, reviewersList.length() - 1)
-            }
-            return reviewersList
+            return reviewers.join(REVIEWERS_SEPARATOR)
         }
 
         @Override
         String toString() {
-            return date + CSV + author + CSV + reviewersAsList() + CSV +
+            return commitDate + CSV + author + CSV + reviewersAsList() + CSV +
                 mergeRequestURL + CSV + mergeCommitSHA + CSV + componentName + "\n"
         }
 
