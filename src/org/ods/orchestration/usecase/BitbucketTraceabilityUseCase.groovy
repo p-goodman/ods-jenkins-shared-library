@@ -135,8 +135,9 @@ class BitbucketTraceabilityUseCase {
 
         @Override
         String toString() {
-            return "${commitDate}${CSV}${author}${CSV}" + reviewersAsList() +
-                "${CSV}${mergeRequestURL}${CSV}${mergeCommitSHA}${CSV}${componentName}${END_LINE}"
+            return new StringBuilder(commitDate).append(CSV).append(author).append(CSV).append(reviewersAsList())
+                .append(CSV).append(mergeRequestURL).append(CSV).append(mergeCommitSHA).append(CSV)
+                .append(componentName).append(END_LINE).toString()
         }
 
     }
