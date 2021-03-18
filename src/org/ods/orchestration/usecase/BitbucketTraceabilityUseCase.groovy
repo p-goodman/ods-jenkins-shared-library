@@ -29,7 +29,9 @@ class BitbucketTraceabilityUseCase {
     @SuppressWarnings(['JavaIoPackageAccess'])
     String generateSourceCodeReviewFile() {
         def file = new File("${steps.env.WORKSPACE}/${CSV_FILE}")
-        file.text = ''
+        file.withWriter { writer ->
+            writer.write("")
+        }
 
         def token = bitbucketService.getToken()
         List<String> repos = getRepositories()
@@ -71,8 +73,8 @@ class BitbucketTraceabilityUseCase {
             if (mergedPR.values) {
                 def record = new Record(getDateWithFormat(commit.committerTimestamp),
                     getAuthor(commit.author),
-                    getReviewers(mergedPR.values[0]?.reviewers),
-                    mergedPR.values[0]?.links?.self?.getAt(0)?.href,
+                    getReviewers(mergedPR.values[0].reviewers),
+                    mergedPR.values[0].links.self.getAt(0).href,
                     commit.id,
                     repo)
                 writeCSVRecord(file, record)
