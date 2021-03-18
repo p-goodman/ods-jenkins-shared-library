@@ -9,14 +9,15 @@ import org.ods.util.IPipelineSteps
 import java.text.SimpleDateFormat
 
 class BitbucketTraceabilityUseCase {
+
     private static final String CSV_FILE = "source-code-review.csv"
     private static final int PAGE_LIMIT = 10
 
-    private BitbucketService bitbucketService
-    private IPipelineSteps steps
-    private Project project
+    private final BitbucketService bitbucketService
+    private final IPipelineSteps steps
+    private final Project project
 
-    BitbucketTraceabilityUseCase(BitbucketService bitbucketService, IPipelineSteps steps, Project project){
+    BitbucketTraceabilityUseCase(BitbucketService bitbucketService, IPipelineSteps steps, Project project) {
         this.steps = steps
         this.project = project
         this.bitbucketService = bitbucketService
@@ -28,7 +29,7 @@ class BitbucketTraceabilityUseCase {
      * @return absolutePath of the created file
      */
     @SuppressWarnings(['JavaIoPackageAccess'])
-    String generateSourceCodeReviewFile(){
+    String generateSourceCodeReviewFile() {
         def file = new File("${steps.env.WORKSPACE}/${CSV_FILE}")
 
         def token = bitbucketService.getToken()
@@ -53,10 +54,10 @@ class BitbucketTraceabilityUseCase {
         }
     }
 
-    List<String> getRepositories() {
+    private List<String> getRepositories() {
         List<String> result = []
         this.project.getRepositories().url.each { String repo ->
-            if(repo.lastIndexOf("/")>=0){
+            if (repo.lastIndexOf("/") >= 0) {
                 repo = repo.substring(repo.lastIndexOf("/") + 1)
             }
             result << repo.replaceAll(".git", "")
@@ -68,7 +69,7 @@ class BitbucketTraceabilityUseCase {
         commits.values.each { commit ->
             Map mergedPR = bitbucketService.getPRforMergedCommit(token, repo, commit.id)
             // Only changes in PR
-            if(mergedPR.values) {
+            if (mergedPR.values) {
                 def record = new Record(getDateWithFormat(commit.committerTimestamp),
                     getAuthor(commit.author),
                     getReviewers(mergedPR.values[0]?.reviewers),
@@ -91,7 +92,7 @@ class BitbucketTraceabilityUseCase {
     private List getReviewers(List reviewers) {
         List<Developer> approvals = []
         reviewers.each {
-            if(it.approved) {
+            if (it.approved) {
                 approvals << new Developer(it.user.name, it.user.emailAddress)
             }
         }
@@ -105,6 +106,7 @@ class BitbucketTraceabilityUseCase {
     }
 
     private class Record {
+
         static final String CSV = "|"
 
         String date
@@ -127,7 +129,7 @@ class BitbucketTraceabilityUseCase {
 
         String reviewersAsList() {
             String reviewersList = ""
-            if (reviewers && reviewers.size()>0) {
+            if (reviewers && reviewers.size() > 0) {
                 def reviewerListString = reviewers.toString()
                 reviewersList = reviewerListString.substring(1, reviewerListString.length() - 1);
             }
@@ -140,12 +142,11 @@ class BitbucketTraceabilityUseCase {
             return date + CSV + author + CSV + reviewersAsList() + CSV +
                 mergeRequestURL + CSV + mergeCommitSHA + CSV + componentName + "\n"
         }
+
     }
-/*
-    @Builder(builderStrategy = ExternalStrategy, forClass = Record)
-    private class RecordBuilder {}
-*/
+
     private class Developer {
+
         public static final String FIELD_SEPARATOR = ';'
         String name
         String mail
@@ -159,8 +160,7 @@ class BitbucketTraceabilityUseCase {
         String toString() {
             return name + FIELD_SEPARATOR + mail
         }
+
     }
-/*
-    @Builder(builderStrategy = ExternalStrategy, forClass = Developer)
-    private class DeveloperBuilder {}*/
+
 }
