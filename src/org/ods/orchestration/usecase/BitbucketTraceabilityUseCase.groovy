@@ -82,7 +82,18 @@ class BitbucketTraceabilityUseCase {
     }
 
     private void writeCSVRecord(File file, Record record) {
-        file << record.toString()
+        file << record.commitDate
+        file << record.CSV
+        file << record.author
+        file << record.CSV
+        file << record.reviewersAsList()
+        file << record.CSV
+        file << record.mergeRequestURL
+        file << record.CSV
+        file << record.mergeCommitSHA
+        file << record.CSV
+        file << record.componentName
+        file << record.END_LINE
     }
 
     private Developer getAuthor(Map author) {
