@@ -135,6 +135,7 @@ class BitbucketTraceabilityUseCase {
 
         @Override
         String toString() {
+            /*
             String record = new String(commitDate)
             record+= CSV
             record+= author
@@ -147,8 +148,8 @@ class BitbucketTraceabilityUseCase {
             record+= CSV
             record+= componentName
             record+= END_LINE
-
-            return record
+*/
+            return commitDate + END_LINE
         }
 
     }
