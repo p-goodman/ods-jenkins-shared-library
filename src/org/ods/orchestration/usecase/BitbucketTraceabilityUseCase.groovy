@@ -29,6 +29,10 @@ class BitbucketTraceabilityUseCase {
     @SuppressWarnings(['JavaIoPackageAccess'])
     String generateSourceCodeReviewFile() {
         def file = new File("${steps.env.WORKSPACE}/${CSV_FILE}")
+        if (file.exists()) {
+            file.delete()
+        }
+        file.createNewFile()
 
         def token = bitbucketService.getToken()
         List<String> repos = getRepositories()
