@@ -105,7 +105,8 @@ class BitbucketTraceabilityUseCase {
 
     private class Record {
 
-        static final String CSV = "|"
+        static final String CSV = ","
+        public static final String REVIEWERS_SEPARATOR = ';'
 
         String date
         Developer author
@@ -128,10 +129,9 @@ class BitbucketTraceabilityUseCase {
         String reviewersAsList() {
             String reviewersList = ""
             if (reviewers && reviewers.size() > 0) {
-                def reviewerListString = reviewers.toString()
-                reviewersList = reviewerListString.substring(1, reviewerListString.length() - 1);
+                reviewers.collect { reviewersList += "${it}${REVIEWERS_SEPARATOR}" }
+                reviewersList = reviewersList.substring(0, reviewersList.length() - 1)
             }
-
             return reviewersList
         }
 
@@ -145,7 +145,7 @@ class BitbucketTraceabilityUseCase {
 
     private class Developer {
 
-        public static final String FIELD_SEPARATOR = ';'
+        public static final String FIELD_SEPARATOR = '|'
         String name
         String mail
 
