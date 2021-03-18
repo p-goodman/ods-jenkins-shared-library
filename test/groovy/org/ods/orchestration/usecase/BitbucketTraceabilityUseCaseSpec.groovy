@@ -9,6 +9,7 @@ import org.ods.services.BitbucketService
 import org.ods.util.ILogger
 import org.ods.util.IPipelineSteps
 import spock.lang.Specification
+import util.FakeProject
 import util.FixtureHelper
 import util.LoggerStub
 import util.PipelineSteps
@@ -60,14 +61,14 @@ class BitbucketTraceabilityUseCaseSpec extends Specification {
         steps.env.BUILD_ID = "1"
         steps.env.WORKSPACE = "${tempFolder.getRoot().absolutePath}"
 
-        def project = new Project(steps, logger, [:]).init()
+        def project = new FakeProject(steps, logger, [:])
+        project.data.metadata = project.loadMetadata("metadata.yml")
         project.data.metadata.id = PROJECT_KEY
         project.data.buildParams = [:]
         project.data.buildParams.targetEnvironment = "dev"
         project.data.buildParams.targetEnvironmentToken = "D"
         project.data.buildParams.version = "WIP"
         project.data.buildParams.releaseStatusJiraIssueKey = "${PROJECT_KEY}-123"
-        project.getOpenShiftApiUrl() >> 'https://api.dev-openshift.com'
         return project
     }
 
