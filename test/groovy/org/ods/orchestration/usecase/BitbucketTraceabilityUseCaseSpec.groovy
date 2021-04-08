@@ -1,6 +1,6 @@
 package org.ods.orchestration.usecase
 
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonArrayFormatVisitor
+
 import groovy.util.logging.Slf4j
 import net.sf.json.groovy.JsonSlurper
 import net.sf.json.test.JSONAssert
@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.*
 
 @Slf4j
 class BitbucketTraceabilityUseCaseSpec extends Specification {
-    private static final String EXPECTED_BITBUCKET_CSV = "expected/bitbucket.csv"
+    private static final String EXPECTED_BITBUCKET_RESULT_JSON = "expected/source-code-review-result.json"
     private static final String EXPECTED_BITBUCKET_JSON = "expected/bitbucket.json"
 
     // Change for local development or CI testing
@@ -47,7 +47,7 @@ class BitbucketTraceabilityUseCaseSpec extends Specification {
         steps.env.WORKSPACE = tempFolder.getRoot().absolutePath
         logger = new LoggerStub(log)
         project = buildProject(logger)
-        bitbucketServiceMock = new BitbucketServiceMock().setUp("csv").startServer(RECORD_WIREMOCK, BB_URL_TO_RECORD)
+        bitbucketServiceMock = new BitbucketServiceMock().setUp("json").startServer(RECORD_WIREMOCK, BB_URL_TO_RECORD)
         bitbucketService = Spy(
                 new BitbucketService(
                         null,
@@ -79,29 +79,30 @@ class BitbucketTraceabilityUseCaseSpec extends Specification {
         bitbucketServiceMock.tearDown()
     }
 
-    def "Generate the csv source code review file"() {
+    def "Generate the json source code review file"() {
         given: "There are two Bitbucket repositories"
         def useCase = new BitbucketTraceabilityUseCase(bitbucketService, steps, project)
 
         when: "the source code review file is generated"
         def actualFile = useCase.generateSourceCodeReviewFile()
 
-        then: "the generated file is as the expected csv file"
-        reportInfo "Generated csv file:<br/>${readSomeLines(actualFile)}"
-        def expectedFile = new FixtureHelper().getResource(EXPECTED_BITBUCKET_CSV)
+        then: "the generated file is as the expected json file"
+        reportInfo "Generated json file:<br/>${readSomeLines(actualFile)}"
+        def expectedFile = new FixtureHelper().getResource(EXPECTED_BITBUCKET_RESULT_JSON)
+
         assertThat(new File(actualFile)).exists().isFile().hasSameTextualContentAs(expectedFile);
     }
 
-    def "Read the csv source code review file"() {
+    def "Read the json source code review file"() {
         given: "There are two Bitbucket repositories"
         def useCase = new BitbucketTraceabilityUseCase(bitbucketService, steps, project)
 
-        when: "the source code review file is readed"
+        when: "the source code review file is read"
         def data = useCase.readSourceCodeReviewFile(
-            new FixtureHelper().getResource(EXPECTED_BITBUCKET_CSV).getAbsolutePath())
+            new FixtureHelper().getResource(EXPECTED_BITBUCKET_RESULT_JSON).getAbsolutePath())
         JSONArray result = new JSONArray(data)
 
-        then: "the data contains the same csv info"
+        then: "the data contains the same json info"
         def expectedFile = new FixtureHelper().getResource(EXPECTED_BITBUCKET_JSON)
         def jsonSlurper = new JsonSlurper()
         def expected = jsonSlurper.parse(expectedFile)
