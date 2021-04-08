@@ -858,7 +858,7 @@ class LeVADocumentUseCase extends DocGenUseCase {
     String createSSDS(Map repo = null, Map data = null) {
         def documentType = DocumentType.SSDS as String
 
-        this.bbt.generateSourceCodeReviewFile()
+        def bbInfo = this.bbt.readSourceCodeReviewFile(this.bbt.generateSourceCodeReviewFile())
 
         def sections = this.getDocumentSections(documentType)
         def watermarkText = this.getWatermarkText(documentType, this.project.hasWipJiraIssues())
@@ -873,6 +873,9 @@ class LeVADocumentUseCase extends DocGenUseCase {
                     description: this.convertImages(techSpec.systemDesignSpec)
                 ]
             }
+
+        if (!sections."sec2s3") sections."sec2s3" = [:]
+        sections."sec2s3".bitbucket = bbInfo
 
         if (!sections."sec3s1") sections."sec3s1" = [:]
         sections."sec3s1".specifications = SortUtil.sortIssuesByProperties(systemDesignSpecifications, ["req_key", "key"])
