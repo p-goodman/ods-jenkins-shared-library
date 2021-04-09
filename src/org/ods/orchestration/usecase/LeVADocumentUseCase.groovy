@@ -875,7 +875,7 @@ class LeVADocumentUseCase extends DocGenUseCase {
             }
 
         if (!sections."sec2s3") sections."sec2s3" = [:]
-        sections."sec2s3".bitbucket = bbInfo
+        sections."sec2s3".bitbucket = SortUtil.sortIssuesByProperties(bbInfo, ["componentName", "commitDate"])
 
         if (!sections."sec3s1") sections."sec3s1" = [:]
         sections."sec3s1".specifications = SortUtil.sortIssuesByProperties(systemDesignSpecifications, ["req_key", "key"])
