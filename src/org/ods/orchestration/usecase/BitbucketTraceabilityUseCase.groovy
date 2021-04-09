@@ -1,7 +1,7 @@
 package org.ods.orchestration.usecase
 
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
+import groovy.json.JsonSlurperClassic
 import org.ods.orchestration.util.Project
 import org.ods.services.BitbucketService
 import org.ods.util.IPipelineSteps
@@ -57,7 +57,7 @@ class BitbucketTraceabilityUseCase {
     @SuppressWarnings(['JavaIoPackageAccess'])
     List<Map> readSourceCodeReviewFile(String filePath) {
         def file = new File(filePath)
-        def jsonSlurper = new JsonSlurper()
+        def jsonSlurper = new JsonSlurperClassic()
 
         return jsonSlurper.parse(file)
     }
