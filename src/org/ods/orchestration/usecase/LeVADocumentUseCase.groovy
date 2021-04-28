@@ -513,8 +513,9 @@ class LeVADocumentUseCase extends DocGenUseCase {
     }
 
     //TODO Use this method to generate the test description everywhere
+    @NonCPS
     def getTestDescription(testIssue) {
-        return testIssue.description ?: testIssue.name ?: 'N/A'
+        return testIssue.description ?: testIssue.name
     }
 
     String createRA(Map repo = null, Map data = null) {
