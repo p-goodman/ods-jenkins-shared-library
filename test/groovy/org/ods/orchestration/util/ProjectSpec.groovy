@@ -476,7 +476,8 @@ class ProjectSpec extends SpecHelper {
 
         then:
         result == [
-            [key: "NET-318", status: "DONE"]
+            [key: "NET-318", name: 'Technical Installation Plan', description: 'C-TIP', status: "DONE",
+             labels: ['Doc:TIP'], fixVersion: '1.0']
         ]
 
         when:
@@ -484,9 +485,12 @@ class ProjectSpec extends SpecHelper {
 
         then:
         result == [
-            [key: "NET-318", status: "DONE"],
-            [key: "NET-7", status: "DONE"],
-            [key: "NET-20", status: "DONE"]
+            [key: "NET-318", name: 'Technical Installation Plan', description: 'C-TIP', status: "DONE",
+             labels: ['Doc:TIP'], fixVersion: '1.0'],
+            [key: "NET-20", name: 'Technical Installation Plan for P', description: 'C-TIP for P', status: "DONE",
+             labels: ['Doc:TIP_P'], fixVersion: '1.0'],
+            [key: "NET-7", name: 'Technical Installation Plan for Q', description: 'C-TIP for Q', status: "DONE",
+             labels: ['Doc:TIP_Q'], fixVersion: '1.0']
         ]
     }
 
@@ -972,7 +976,7 @@ class ProjectSpec extends SpecHelper {
         1 * project.convertJiraDataToJiraDataItems(_)
         1 * project.resolveJiraDataItemReferences(_)
         1 * project.loadJiraDataBugs(*_) >> createProjectJiraDataBugs()
-        2 * project.loadJiraDataTrackingDocs(*_) >> createProjectJiraDataDocs()
+        1 * project.loadJiraDataTrackingDocs(*_) >> createProjectJiraDataDocs()
         1 * project.loadJiraDataIssueTypes() >> createProjectJiraDataIssueTypes()
         1 * jiraUseCase.updateJiraReleaseStatusBuildNumber()
 
@@ -1181,90 +1185,6 @@ class ProjectSpec extends SpecHelper {
 
         then:
         result.version == "0.1"
-    }
-
-    def "load Jira data"() {
-        setup:
-        def docGenData
-
-        // Stubbed Method Responses limitation of not being able to spy/mock JiraUseCase for projectObj
-        def jiraIssue1 = createJiraIssue("1", null, null, null, "DONE")
-        jiraIssue1.fields["0"] = "1.0"
-        jiraIssue1.fields.labels = [JiraUseCase.LabelPrefix.DOCUMENT+ "CSD"]
-        jiraIssue1.renderedFields = [:]
-        jiraIssue1.renderedFields["1"] = "<html>myContent1</html>"
-        jiraIssue1.renderedFields.description = "<html>1-description</html>"
-
-        def jira = Mock(JiraService) {
-            getDocGenData(_) >> {
-                return docGenData
-            }
-            isVersionEnabledForDelta(*_) >> { return false }
-            searchByJQLQuery(*_) >> { return [ issues: [jiraIssue1]]}
-            getTextFieldsOfIssue(*_) >> { return [field_0: [name: "1"]]}
-        }
-
-        def projectObj = new Project(steps, logger)
-        projectObj.git = git
-        projectObj.jiraUseCase = new JiraUseCase(projectObj, steps, Mock(MROPipelineUtil), jira, logger)
-        projectObj.data.buildParams = createProjectBuildParams()
-        projectObj.data.jira = [issueTypes: [
-            (JiraUseCase.IssueTypes.DOCUMENTATION_CHAPTER): [ fields: [
-                (JiraUseCase.CustomIssueFields.HEADING_NUMBER): [id:"0"],
-                (JiraUseCase.CustomIssueFields.CONTENT): [id: "1"],
-            ]],
-            (JiraUseCase.IssueTypes.RELEASE_STATUS): [ fields: [
-                (JiraUseCase.CustomIssueFields.RELEASE_VERSION): [id: "field_0"],
-            ]]
-        ]]
-        projectObj.data.metadata = [capabilities:[[LeVADocs:[GAMPCategory: 5,templatesVersion: "1.1"]]]]
-
-        def projectKey = "DEMO"
-
-        project = createProject([
-            "loadJiraData": {
-                return projectObj.loadJiraData(projectKey)
-            }
-        ])
-
-        when:
-        docGenData = null
-        project.loadJiraData(projectKey)
-
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.message == "Error: unable to load documentation generation data from Jira. 'project.id' is undefined."
-
-        when:
-        docGenData = [:]
-        project.loadJiraData(projectKey)
-
-        then:
-        e = thrown(IllegalArgumentException)
-        e.message == "Error: unable to load documentation generation data from Jira. 'project.id' is undefined."
-
-        when:
-        docGenData = [project: [:]]
-        project.loadJiraData(projectKey)
-
-        then:
-        e = thrown(IllegalArgumentException)
-        e.message == "Error: unable to load documentation generation data from Jira. 'project.id' is undefined."
-
-        when:
-        docGenData = [project: [id: null]]
-        project.loadJiraData(projectKey)
-
-        then:
-        e = thrown(IllegalArgumentException)
-        e.message == "Error: unable to load documentation generation data from Jira. 'project.id' is undefined."
-
-        when:
-        docGenData = [project: [id: "4711"]]
-        def result = project.loadJiraData(projectKey)
-
-        then:
-        result.project.id == "4711"
     }
 
     def "load metadata"() {
@@ -1565,48 +1485,6 @@ class ProjectSpec extends SpecHelper {
 
         cleanup:
         metadataFile.delete()
-    }
-
-    def "use old docGen report when version is not enabled for the feature"() {
-        setup:
-        def versionEnabled
-        def jiraServiceStubs = { JiraService it ->
-            it.isVersionEnabledForDelta(*_) >> {
-                return versionEnabled
-            }
-            it.getDocGenData(*_) >> { return [project:[id:"1"]] }
-            it.getDeltaDocGenData(*_) >> { return [project:[id:"1"]] }
-            it.getTextFieldsOfIssue(*_) >> { return [field_0: [name: "1"]]}
-        }
-        project = setupWithJiraService(jiraServiceStubs)
-        project.data.jira = [issueTypes: [
-            (JiraUseCase.IssueTypes.RELEASE_STATUS): [ fields: [
-                (JiraUseCase.CustomIssueFields.RELEASE_VERSION): [id: "field_0"],
-            ]]
-        ]]
-
-        when:
-        versionEnabled = false
-        project.loadJiraData("projectKey")
-
-        then:
-        1 * project.getDocumentChapterData(_) >> [:]
-        1 * project.getVersionFromReleaseStatusIssue()
-        0 * project.loadJiraDataForCurrentVersion(*_)
-        1 * project.loadFullJiraData(_)
-
-        when:
-        versionEnabled = true
-        project.loadJiraData("DEMO")
-
-        then:
-        1 * project.getVersionFromReleaseStatusIssue() >> '1'
-
-        then:
-        1 * project.loadJiraDataForCurrentVersion(*_)
-        1 * project.getDocumentChapterData(*_) >> [:]
-        0 * project.loadFullJiraData(_)
-
     }
 
     def "load saved data from the previousVersion"() {
@@ -2327,7 +2205,6 @@ class ProjectSpec extends SpecHelper {
         project.data.jiraResolved = project.resolveJiraDataItemReferences(project.data.jira)
 
         then:
-        1 * project.getVersionFromReleaseStatusIssue() >> secondVersion
         1 * project.loadVersionJiraData(*_) >> newVersionData
         1 * project.loadSavedJiraData(_) >> storedData
 
@@ -2395,7 +2272,6 @@ class ProjectSpec extends SpecHelper {
         project.data.jira = project.loadJiraData("my-project")
 
         then:
-        1 * project.getVersionFromReleaseStatusIssue() >> firstVersion
         1 * project.loadVersionJiraData(*_) >> newVersionData
 
         then:
@@ -2458,7 +2334,6 @@ class ProjectSpec extends SpecHelper {
         project.data.jira = project.loadJiraData("my-project")
 
         then:
-        1 * project.getVersionFromReleaseStatusIssue() >> secondVersion
         1 * project.loadSavedJiraData(_) >> storedData
         1 * project.loadVersionJiraData(*_) >> newVersionData
 
@@ -2530,7 +2405,6 @@ class ProjectSpec extends SpecHelper {
         project.data.jira = project.loadJiraData("my-project")
 
         then:
-        1 * project.getVersionFromReleaseStatusIssue() >> secondVersion
         1 * project.loadSavedJiraData(_) >> storedData
         1 * project.loadVersionJiraData(*_) >> newVersionData
 
@@ -2592,7 +2466,6 @@ class ProjectSpec extends SpecHelper {
         project.data.jira = project.loadJiraData("my-project")
 
         then:
-        1 * project.getVersionFromReleaseStatusIssue() >> secondVersion
         1 * project.loadVersionJiraData(*_) >> newVersionData
         1 * project.loadSavedJiraData(_) >> storedData
 

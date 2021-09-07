@@ -1430,9 +1430,7 @@ class LeVADocumentUseCaseSpec extends SpecHelper {
         1 * usecase.getSectionsNotDone(documentType) >> []
         (1.._) * this.project.isDeveloperPreviewMode() >> false
         (1.._) * this.project.hasWipJiraIssues() >> false
-
-        then:
-        1 * usecase.updateValidDocVersionInJira("TRK-1", "1")
+        1 * usecase.updateValidDocVersionInJira("TRK-1", "1") >> true
     }
 
     def "does not update document version in Jira documentation tracking issue when run is developer preview"() {
