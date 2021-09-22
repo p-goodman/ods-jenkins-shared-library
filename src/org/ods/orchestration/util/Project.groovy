@@ -361,7 +361,7 @@ class Project {
         this.data.jira.undone = this.computeWipJiraIssues(this.data.jira)
         this.data.jira.undoneDocChapters = this.computeWipDocChapterPerDocument(this.data.jira)
 
-        if (this.hasWipJiraIssues()) {
+        if (!this.isProjectReadyToFreeze()) {
             String message = ProjectMessagesUtil.generateWIPIssuesMessage(this)
 
             if(!this.isWorkInProgress){
@@ -409,14 +409,14 @@ class Project {
     }
 
     @NonCPS
-    boolean isProjectReadyToFreeze(Map data) {
-        def result = true
+    boolean isProjectReadyToFreeze() {
+        def data = this.data.jira
         JiraDataItem.TYPES_TO_BE_CLOSED.each { type ->
-            if (data.containsKey(type)) {
-                result = result & (data[type].find { k, v -> issueIsWIP(v) } == null)
+            if (data[type]?.find { k, v -> issueIsWIP(v) }) {
+                return false
             }
         }
-        return result
+        return true
     }
 
     @NonCPS
