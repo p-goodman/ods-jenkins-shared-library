@@ -48,6 +48,7 @@
 - Add support for ods-saas-service components ([#607](https://github.com/opendevstack/ods-jenkins-shared-library/pull/607))
 - Automatically change the date_created by Wiremock with a Wiremock wildcard ([#743](https://github.com/opendevstack/ods-jenkins-shared-library/pull/743))
 - Refactor and create unit test for LeVADocumentUseCase.getReferencedDocumentsVersion ([#744](https://github.com/opendevstack/ods-jenkins-shared-library/pull/744))
+- Remove support for EDP 1.0 projects in the Release Manager ([#748](https://github.com/opendevstack/ods-jenkins-shared-library/pull/748))
 
 ## [3.0] - 2020-08-11
 
