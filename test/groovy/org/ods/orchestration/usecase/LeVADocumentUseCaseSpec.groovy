@@ -1444,19 +1444,18 @@ class LeVADocumentUseCaseSpec extends SpecHelper {
         ]
 
         project.data.jira.trackingDocs << trackingIssues
+        this.project.isDeveloperPreviewMode() >> false
+        this.project.hasWipJiraIssues() >> false
 
         when:
         usecase.updateJiraDocumentationTrackingIssue(documentType, message, "1")
 
         then:
         1 * usecase.getSectionsNotDone(documentType) >> []
-        (1.._) * this.project.isDeveloperPreviewMode() >> false
-        (1.._) * this.project.hasWipJiraIssues() >> false
 
         then:
         1 * usecase.updateValidDocVersionInJira("TRK-1", "1")
     }
-
     def "does not update document version in Jira documentation tracking issue when run is developer preview"() {
         given:
         jiraUseCase = Spy(new JiraUseCase(project, steps, util, Mock(JiraService), logger))
@@ -1668,7 +1667,6 @@ class LeVADocumentUseCaseSpec extends SpecHelper {
     def "referenced documents version"() {
         given:
         def project = Stub(Project)
-        project.isVersioningEnabled >> true
         project.getDocumentVersionFromHistories('CSD') >> 3L
         project.getDocumentVersionFromHistories('DTR') >> 4L
         project.buildParams >> [targetEnvironmentToken: 'D', configItem: 'ConfigItem']
