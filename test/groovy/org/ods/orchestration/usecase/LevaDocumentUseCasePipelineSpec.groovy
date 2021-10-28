@@ -81,7 +81,131 @@ class LevaDocumentUseCasePipelineSpec extends PipelineSpecBase {
         version = "WIP"
     }
 
-    // TODO docs with params:  "DTR",  "CFTR", "IVR",  "TCR", "TIR", "TRC"
+    def "create TRC"() {
+        given: "There's a LeVADocument service"
+        def docType = "TRC"
+        def version = "WIP"
+        def demoAcceptanceKey = "OFI2004124"
+        def demoInstallationKey = "OFI2004125"
+        def demoIntegrationKey = "OFI2004126"
+        LeVADocumentUseCase useCase = getLeVADocumentUseCaseFactory(docType, version)
+            .loadProject(setBuildParams(version))
+            .createLeVADocumentUseCase()
+        def repo = [:]
+        def testReportFiles = [
+            "/var/lib/jenkins/jobs/${PROJECT_KEY.toLowerCase()}-cd/jobs/${PROJECT_KEY.toLowerCase()}-cd-release-master/" +
+                "workspace/xunit/spock/acceptance/build/test-results/acceptance-groovy/TEST-DemoAcceptance.xml",
+            "/var/lib/jenkins/jobs/${PROJECT_KEY.toLowerCase()}-cd/jobs/${PROJECT_KEY.toLowerCase()}-cd-release-master/" +
+                "workspace/xunit/spock/installation/build/test-results/installation-groovy/TEST-DemoInstallation.xml",
+            "/var/lib/jenkins/jobs/${PROJECT_KEY.toLowerCase()}-cd/jobs/${PROJECT_KEY.toLowerCase()}-cd-release-master/" +
+                "workspace/xunit/spock/integration/build/test-results/integration-groovy/TEST-DemoIntegration.xml"
+        ]
+        def testSuites = [
+            [
+                hostname: '${json-unit.any-string}',
+                failures:'0',
+                tests:'1',
+                name:'DemoAcceptance',
+                time:'${json-unit.any-string}',
+                errors:'0',
+                timestamp:'${json-unit.any-string}',
+                skipped:'0',
+                properties:[],
+                testcases:[
+                    [
+                        classname:'DemoAcceptance',
+                        name: "${demoAcceptanceKey} basic test",
+                        time:'${json-unit.any-string}',
+                        skipped:'false',
+                        systemOut:'',
+                        systemErr:'',
+                        timestamp:'${json-unit.any-string}'
+                    ]
+                ],
+                systemOut:'',
+                systemErr:''
+            ],
+            [
+                hostname:'${json-unit.any-string}',
+                failures:'0',
+                tests:'1',
+                name:'DemoInstallation',
+                time:'${json-unit.any-string}',
+                errors:'0',
+                timestamp:'${json-unit.any-string}',
+                skipped:'0',
+                properties:[],
+                testcases:[
+                    [
+                        classname:'DemoInstallation',
+                        name:"${demoInstallationKey} basic test",
+                        time:'${json-unit.any-string}',
+                        skipped:'false',
+                        systemOut:'',
+                        systemErr:'',
+                        timestamp:'${json-unit.any-string}'
+                    ]
+                ],
+                systemOut:'',
+                systemErr:''
+            ],
+            [
+                hostname:'${json-unit.any-string}',
+                failures:'0',
+                tests:'1',
+                name:'DemoIntegration',
+                time:'${json-unit.any-string}',
+                errors:'0',
+                timestamp:'${json-unit.any-string}',
+                skipped:'0',
+                properties:[],
+                testcases:[
+                    [
+                        classname:'DemoIntegration',
+                        name:"${demoIntegrationKey} basic test",
+                        time:'${json-unit.any-string}',
+                        skipped:'false',
+                        systemOut:'',
+                        systemErr:'',
+                        timestamp:'${json-unit.any-string}'
+                    ]
+                ],
+                systemOut:'',
+                systemErr:''
+            ]
+        ]
+
+        def data = [
+            tests:[
+                acceptance:[
+                    testReportFiles: testReportFiles,
+                    testResults:[
+                        testsuites: testSuites
+                    ]
+                ],
+                installation:[
+                    testReportFiles: testReportFiles,
+                    testResults:[
+                        testsuites: testSuites
+                    ]
+                ],
+                integration:[
+                    testReportFiles: testReportFiles,
+                    testResults:[
+                        testsuites: testSuites
+                    ]
+                ]
+            ]
+        ]
+
+        when: "the user creates a LeVA document"
+        useCase.createTRC(repo, data)
+
+        then: "the generated PDF is as expected"
+        validatePDF(docType, version)
+    }
+
+    // TODO docs with params:  "DTR",  "CFTR", "IVR",  "TCR", "TIR"
 
     @Ignore // until DTR", "TIR" are done
     @Unroll
