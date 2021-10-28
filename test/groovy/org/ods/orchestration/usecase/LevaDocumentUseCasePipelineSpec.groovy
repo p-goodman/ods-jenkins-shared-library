@@ -81,7 +81,125 @@ class LevaDocumentUseCasePipelineSpec extends PipelineSpecBase {
         version = "WIP"
     }
 
-    // TODO docs with params:  "DTR",  "CFTR", "IVR",  "TCR", "TIR", "TRC"
+    def "create TRC"() {
+        given: "There's a LeVADocument service"
+        def docType = "TRC"
+        def version = "WIP"
+        LeVADocumentUseCase useCase = getLeVADocumentUseCaseFactory(docType, version)
+            .loadProject(setBuildParams(version))
+            .createLeVADocumentUseCase()
+        def repo = [:]
+        def testReportFiles = [
+            '/var/lib/jenkins/jobs/demo3-cd/jobs/demo3-cd-release-master/workspace/xunit/test-three/acceptance/build/test-results/acceptance-groovy/TEST-DemoAcceptance.xml',
+            '/var/lib/jenkins/jobs/demo3-cd/jobs/demo3-cd-release-master/workspace/xunit/test-three/installation/build/test-results/installation-groovy/TEST-DemoInstallation.xml',
+            '/var/lib/jenkins/jobs/demo3-cd/jobs/demo3-cd-release-master/workspace/xunit/test-three/integration/build/test-results/integration-groovy/TEST-DemoIntegration.xml'
+        ]
+        def testsuites = [
+            [
+                hostname: 'pod-740fc8d9-07d0-4614-bd37-af4d0ee23e38-m7g5d-b3n7b',
+                failures:'0',
+                tests:'1',
+                name:'DemoAcceptance',
+                time:'0.012',
+                errors:'0',
+                timestamp:'2021-10-28T09:35:45',
+                skipped:'0',
+                properties:[],
+                testcases:[
+                    [
+                        classname:'DemoAcceptance',
+                        name: 'DEMO3132 goes to W3C editor',
+                        time:'0.012',
+                        skipped:'false',
+                        systemOut:'',
+                        systemErr:'',
+                        timestamp:'2021-10-28T09:35:45'
+                    ]
+                ],
+                systemOut:'',
+                systemErr:''
+            ],
+            [
+                hostname:'pod-740fc8d9-07d0-4614-bd37-af4d0ee23e38-m7g5d-b3n7b',
+                failures:'0',
+                tests:'1',
+                name:'DemoInstallation',
+                time:'0.01',
+                errors:'0',
+                timestamp:'2021-10-28T09:35:16',
+                skipped:'0',
+                properties:[],
+                testcases:[
+                    [
+                        classname:'DemoInstallation',
+                        name:'DEMO3128 basic test',
+                        time:'0.01',
+                        skipped:'false',
+                        systemOut:'',
+                        systemErr:'',
+                        timestamp:'2021-10-28T09:35:16'
+                    ]
+                ],
+                systemOut:'',
+                systemErr:''
+            ],
+            [
+                hostname:'pod-740fc8d9-07d0-4614-bd37-af4d0ee23e38-m7g5d-b3n7b',
+                failures:'0',
+                tests:'1',
+                name:'DemoIntegration',
+                time:'0.01',
+                errors:'0',
+                timestamp:'2021-10-28T09:35:16',
+                skipped:'0',
+                properties:[],
+                testcases:[
+                    [
+                        classname:'DemoIntegration',
+                        name:'DEMO3130 basic test',
+                        time:'0.01',
+                        skipped:'false',
+                        systemOut:'',
+                        systemErr:'',
+                        timestamp:'2021-10-28T09:35:16'
+                    ]
+                ],
+                systemOut:'',
+                systemErr:''
+            ]
+        ]
+
+        def data = [
+            tests:[
+                acceptance:[
+                    testReportFiles: testReportFiles,
+                    testResults:[
+                        testsuites: testsuites
+                    ]
+                ],
+                installation:[
+                    testReportFiles: testReportFiles,
+                    testResults:[
+                        testsuites: testsuites
+                    ]
+                ],
+                integration:[
+                    testReportFiles: testReportFiles,
+                    testResults:[
+                        testsuites: testsuites
+                    ]
+                ]
+            ]
+        ]
+
+        when: "the user creates a LeVA document"
+        useCase.createTRC(repo, data)
+
+        then: "the generated PDF is as expected"
+        validatePDF(docType, version)
+    }
+
+    // TODO docs with params:  "DTR",  "CFTR", "IVR",  "TCR", "TIR"
 
     @Ignore // until DTR", "TIR" are done
     @Unroll
