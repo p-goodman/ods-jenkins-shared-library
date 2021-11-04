@@ -1,0 +1,35 @@
+{
+  "id" : "d68b812b-627b-4cb2-a4d2-c40254c2a05d",
+  "name" : "rest_api_2_search",
+  "request" : {
+    "url" : "/rest/api/2/search",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"jql\":\"project = OFI2004 AND issuetype = 'Documentation'\",\"maxResults\":1000}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "rest_api_2_search-d68b812b-627b-4cb2-a4d2-c40254c2a05d.json",
+    "headers" : {
+      "X-AREQUESTID" : "889x282x1",
+      "X-ASESSIONID" : "3ur6b3",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "SAMEORIGIN",
+      "Content-Security-Policy" : "frame-ancestors 'self'",
+      "X-ASEN" : "SEN-L15041058",
+      "X-Seraph-LoginReason" : "OK",
+      "X-AUSERNAME" : "project-admin",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Vary" : "User-Agent",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Mon, 08 Nov 2021 14:49:46 GMT"
+    }
+  },
+  "uuid" : "d68b812b-627b-4cb2-a4d2-c40254c2a05d",
+  "persistent" : true,
+  "insertionIndex" : 86
+}

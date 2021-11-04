@@ -38,7 +38,7 @@ class LevaDocumentUseCasePipelineSpec extends PipelineSpecBase {
     private static final boolean RECORD = Boolean.parseBoolean(System.properties["testRecordMode"])
     private static final boolean GENERATE_EXPECTED_PDF_FILES = Boolean.parseBoolean(System.properties["generateExpectedPdfFiles"])
     private static final String PROJECT_KEY = "OFI2004"
-    private static final String PROJECT_KEY_RELEASE_ID = "207"
+    private static final String PROJECT_KEY_RELEASE_ID = "123"
     private static final String SAVED_DOCUMENTS="build/reports/LeVADocs"
 
     @Rule
@@ -79,6 +79,42 @@ class LevaDocumentUseCasePipelineSpec extends PipelineSpecBase {
         where:
         doctype << [ "CSD", "DIL", "DTP", "RA",  "CFTP", "IVP", "SSDS", "TCP",  "TIP"]
         version = "WIP"
+    }
+
+    def "create CFTR"() {
+        given: "There's a LeVADocument service"
+        LeVADocumentUseCase useCase = getLeVADocumentUseCaseFactory(doctype, version)
+            .loadProject(setBuildParams(version))
+            .createLeVADocumentUseCase()
+
+        and: "Having these issues"
+            def bindings = [
+                tests: [
+                    acceptance: [
+                        issues: [
+                            [key: 'TEST1', success: true, testsuite: "DemoAcceptance", testcase: "basicTest"],
+                            [key: 'OFI2004126', success: true, testsuite: "DemoAcceptance", testcase: "OFI2004126_test"],
+                            [key: 'TEST2', skipped: true, testsuite: "DemoAcceptanceTest", testcase: "basicTest()"]
+                        ]
+                    ],
+                    integration: [
+                        issues: [
+                            [key: 'TEST3', success: true, testsuite: "DemoIntegration", testcase: "basic test"],
+                            [key: 'OFI2004127', success: false, testsuite: "DemoIntegrationTest", testcase: "OFI2004127_test"],
+                            [key: 'TEST4', skipped: true, testsuite: "DemoIntegrationTest", testcase: "basicTest()"]
+                        ]
+                    ]
+                ]
+            ]
+        when: "the user creates a LeVA document"
+        useCase.createCFTR(null, FixtureHelper.createCFTRData(bindings))
+
+        then: "the generated PDF is as expected"
+        validatePDF(doctype, version)
+
+        where:
+        version = "WIP"
+        doctype = "CFTR"
     }
 
     // TODO docs with params:  "DTR",  "CFTR", "IVR",  "TCR", "TIR", "TRC"

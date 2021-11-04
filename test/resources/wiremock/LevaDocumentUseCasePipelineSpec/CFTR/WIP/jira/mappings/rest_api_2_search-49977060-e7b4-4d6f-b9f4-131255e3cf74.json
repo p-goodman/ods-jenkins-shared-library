@@ -1,0 +1,35 @@
+{
+  "id" : "49977060-e7b4-4d6f-b9f4-131255e3cf74",
+  "name" : "rest_api_2_search",
+  "request" : {
+    "url" : "/rest/api/2/search",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"fields\":[\"key\",\"status\",\"summary\",\"labels\",\"issuelinks\",\"customfield_10209\",\"customfield_10201\"],\"jql\":\"project = OFI2004 AND issuetype = 'Documentation Chapter' AND fixVersion = '1.0'\",\"expand\":[\"renderedFields\"],\"maxResults\":1000}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "rest_api_2_search-49977060-e7b4-4d6f-b9f4-131255e3cf74.json",
+    "headers" : {
+      "X-AREQUESTID" : "889x277x1",
+      "X-ASESSIONID" : "3ur6b3",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "SAMEORIGIN",
+      "Content-Security-Policy" : "frame-ancestors 'self'",
+      "X-ASEN" : "SEN-L15041058",
+      "X-Seraph-LoginReason" : "OK",
+      "X-AUSERNAME" : "project-admin",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Vary" : "User-Agent",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Mon, 08 Nov 2021 14:49:45 GMT"
+    }
+  },
+  "uuid" : "49977060-e7b4-4d6f-b9f4-131255e3cf74",
+  "persistent" : true,
+  "insertionIndex" : 81
+}

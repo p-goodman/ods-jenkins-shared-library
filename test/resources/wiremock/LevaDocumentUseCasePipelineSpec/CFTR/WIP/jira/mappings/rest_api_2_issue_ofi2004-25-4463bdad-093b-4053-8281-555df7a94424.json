@@ -1,0 +1,30 @@
+{
+  "id" : "4463bdad-093b-4053-8281-555df7a94424",
+  "name" : "rest_api_2_issue_ofi2004-25",
+  "request" : {
+    "url" : "/rest/api/2/issue/OFI2004-25?fields=customfield_10213",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"expand\":\"renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations\",\"id\":\"11124\",\"self\":\"http://jira.odsbox.lan:8080/rest/api/2/issue/11124\",\"key\":\"OFI2004-25\",\"fields\":{\"customfield_10213\":null}}",
+    "headers" : {
+      "X-AREQUESTID" : "889x294x1",
+      "X-ASESSIONID" : "3ur6b3",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "SAMEORIGIN",
+      "Content-Security-Policy" : "frame-ancestors 'self'",
+      "X-ASEN" : "SEN-L15041058",
+      "X-Seraph-LoginReason" : "OK",
+      "X-AUSERNAME" : "project-admin",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Vary" : "User-Agent",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Mon, 08 Nov 2021 14:49:47 GMT"
+    }
+  },
+  "uuid" : "4463bdad-093b-4053-8281-555df7a94424",
+  "persistent" : true,
+  "insertionIndex" : 98
+}

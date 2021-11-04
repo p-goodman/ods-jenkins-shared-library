@@ -1,0 +1,30 @@
+{
+  "id" : "2027d93a-8b29-437c-bfd6-9f8ef3bb84d4",
+  "name" : "rest_platform_11_productreleases_ofi2004_versions_10",
+  "request" : {
+    "url" : "/rest/platform/1.1/productreleases/OFI2004/versions/1.0",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"addedIssues\":[{\"key\":\"OFI2004-126\",\"summary\":\"Acceptance test 1\",\"issueTypeName\":\"Test\",\"fixVersions\":[\"1.0\"],\"subTaskKeys\":[],\"status\":\"To Do\"},{\"key\":\"OFI2004-127\",\"summary\":\"Installation test 1\",\"issueTypeName\":\"Test\",\"fixVersions\":[\"1.0\"],\"subTaskKeys\":[],\"status\":\"To Do\"},{\"key\":\"OFI2004-124\",\"summary\":\"Story 1\",\"issueTypeName\":\"Story\",\"fixVersions\":[\"1.0\"],\"subTaskKeys\":[],\"status\":\"To Do\"},{\"key\":\"OFI2004-125\",\"summary\":\"Story 2\",\"issueTypeName\":\"Story\",\"fixVersions\":[\"1.0\"],\"subTaskKeys\":[],\"status\":\"To Do\"}],\"modifiedIssues\":{},\"continuedIssueKeys\":[],\"discontinuedIssueKeys\":[],\"predecessorIssueKeys\":[],\"addedLinks\":[{\"sourceKey\":\"OFI2004-124\",\"linkType\":\"COMPONENTS\",\"destKey\":\"Technology-thefirst\"},{\"sourceKey\":\"OFI2004-127\",\"linkType\":\"TESTS\",\"destKey\":\"OFI2004-124\"},{\"sourceKey\":\"OFI2004-126\",\"linkType\":\"TESTS\",\"destKey\":\"OFI2004-124\"},{\"sourceKey\":\"OFI2004-125\",\"linkType\":\"COMPONENTS\",\"destKey\":\"Technology-thefirst\"}],\"continuedLinks\":[],\"discontinuedLinks\":[],\"inheritedLinks\":[],\"predecessorLinks\":[],\"deletedIssuesAfterDeployToDev\":[],\"managerStatus\":\"Successful\",\"documentsCreated\":false,\"versionId\":10100,\"name\":\"1.0\",\"frozen\":false,\"releaseState\":\"Change Ready for Implementation\",\"version\":\"1.0\"}",
+    "headers" : {
+      "X-AREQUESTID" : "889x275x1",
+      "X-ASESSIONID" : "3ur6b3",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "SAMEORIGIN",
+      "Content-Security-Policy" : "frame-ancestors 'self'",
+      "X-ASEN" : "SEN-L15041058",
+      "X-Seraph-LoginReason" : "OK",
+      "X-AUSERNAME" : "project-admin",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Vary" : "User-Agent",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Mon, 08 Nov 2021 14:49:44 GMT"
+    }
+  },
+  "uuid" : "2027d93a-8b29-437c-bfd6-9f8ef3bb84d4",
+  "persistent" : true,
+  "insertionIndex" : 79
+}

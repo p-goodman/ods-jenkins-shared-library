@@ -1,0 +1,30 @@
+{
+  "id" : "ba7461a2-b308-4b30-aa1b-2badfdc57af3",
+  "name" : "rest_api_2_issue_createmeta_ofi2004_issuetypes_10001",
+  "request" : {
+    "url" : "/rest/api/2/issue/createmeta/OFI2004/issuetypes/10001",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "rest_api_2_issue_createmeta_ofi2004_issuetypes_10001-ba7461a2-b308-4b30-aa1b-2badfdc57af3.json",
+    "headers" : {
+      "X-AREQUESTID" : "889x265x1",
+      "X-ASESSIONID" : "3ur6b3",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "SAMEORIGIN",
+      "Content-Security-Policy" : "frame-ancestors 'self'",
+      "X-ASEN" : "SEN-L15041058",
+      "X-Seraph-LoginReason" : "OK",
+      "X-AUSERNAME" : "project-admin",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Vary" : "User-Agent",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Mon, 08 Nov 2021 14:49:43 GMT"
+    }
+  },
+  "uuid" : "ba7461a2-b308-4b30-aa1b-2badfdc57af3",
+  "persistent" : true,
+  "insertionIndex" : 69
+}
