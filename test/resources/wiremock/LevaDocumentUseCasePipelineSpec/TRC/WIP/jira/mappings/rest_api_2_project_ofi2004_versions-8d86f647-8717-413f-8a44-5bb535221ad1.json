@@ -1,0 +1,33 @@
+{
+  "id" : "8d86f647-8717-413f-8a44-5bb535221ad1",
+  "name" : "rest_api_2_project_ofi2004_versions",
+  "request" : {
+    "url" : "/rest/api/2/project/OFI2004/versions",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "[{\"self\":\"http://jira.odsbox.lan:8080/rest/api/2/version/10000\",\"id\":\"10000\",\"name\":\"1.0\",\"archived\":false,\"released\":false,\"projectId\":10100}]",
+    "headers" : {
+      "X-AREQUESTID" : "460x1745x1",
+      "X-ASESSIONID" : "17royij",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "SAMEORIGIN",
+      "Content-Security-Policy" : "frame-ancestors 'self'",
+      "X-ASEN" : "SEN-L15041058",
+      "X-Seraph-LoginReason" : "OK",
+      "X-AUSERNAME" : "openshift",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Vary" : "User-Agent",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Fri, 05 Nov 2021 07:40:23 GMT"
+    }
+  },
+  "uuid" : "8d86f647-8717-413f-8a44-5bb535221ad1",
+  "persistent" : true,
+  "scenarioName" : "scenario-1-rest-api-2-project-OFI2004-versions",
+  "requiredScenarioState" : "Started",
+  "newScenarioState" : "scenario-1-rest-api-2-project-OFI2004-versions-2",
+  "insertionIndex" : 112
+}

@@ -1,0 +1,30 @@
+{
+  "id" : "e5170743-978b-4185-88d4-f18646fa90c1",
+  "name" : "rest_platform_11_productreleases_ofi2004_versions_10",
+  "request" : {
+    "url" : "/rest/platform/1.1/productreleases/OFI2004/versions/1.0",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"addedIssues\":[{\"key\":\"OFI2004-126\",\"summary\":\"DemoIntegration\",\"issueTypeName\":\"Test\",\"fixVersions\":[\"1.0\"],\"subTaskKeys\":[],\"status\":\"To Do\"},{\"key\":\"OFI2004-124\",\"summary\":\"DemoAcceptance\",\"issueTypeName\":\"Test\",\"fixVersions\":[\"1.0\"],\"subTaskKeys\":[],\"status\":\"To Do\"},{\"key\":\"OFI2004-125\",\"summary\":\"DemoInstallation\",\"issueTypeName\":\"Test\",\"fixVersions\":[\"1.0\"],\"subTaskKeys\":[],\"status\":\"To Do\"}],\"modifiedIssues\":{},\"continuedIssueKeys\":[],\"discontinuedIssueKeys\":[],\"predecessorIssueKeys\":[],\"addedLinks\":[{\"sourceKey\":\"OFI2004-124\",\"linkType\":\"COMPONENTS\",\"destKey\":\"Technology-thefirst\"}],\"continuedLinks\":[],\"discontinuedLinks\":[],\"inheritedLinks\":[],\"predecessorLinks\":[],\"managerStatus\":\"Successful\",\"versionId\":10000,\"name\":\"1.0\",\"frozen\":false,\"releaseState\":\"Change Ready for Implementation\",\"version\":\"1.0\"}",
+    "headers" : {
+      "X-AREQUESTID" : "460x1742x1",
+      "X-ASESSIONID" : "17royij",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "SAMEORIGIN",
+      "Content-Security-Policy" : "frame-ancestors 'self'",
+      "X-ASEN" : "SEN-L15041058",
+      "X-Seraph-LoginReason" : "OK",
+      "X-AUSERNAME" : "openshift",
+      "Cache-Control" : "no-cache, no-store, no-transform",
+      "Vary" : "User-Agent",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Fri, 05 Nov 2021 07:40:22 GMT"
+    }
+  },
+  "uuid" : "e5170743-978b-4185-88d4-f18646fa90c1",
+  "persistent" : true,
+  "insertionIndex" : 109
+}

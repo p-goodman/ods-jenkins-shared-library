@@ -1,0 +1,26 @@
+{
+    "id": "db50b02b-36c7-46b0-a2b3-e9e87092d170",
+    "insertionIndex": 3,
+    "name": "document",
+    "persistent": true,
+    "request": {
+        "bodyPatterns": [
+            {
+                "equalToJson": "{\"data\":{\"data\":{\"documentHistory\":[{\"entryId\":1,\"rational\":\"Initial document version.\"},{\"entryId\":2,\"issueType\":[{\"added\":[{\"action\":\"add\",\"key\":\"OFI2004-201\"}],\"changed\":[],\"discontinued\":[],\"type\":\"requirements\"},{\"added\":[{\"action\":\"add\",\"key\":\"OFI2004-204\"}],\"changed\":[],\"discontinued\":[],\"type\":\"risks\"},{\"added\":[{\"action\":\"add\",\"key\":\"OFI2004-202\"}],\"changed\":[],\"discontinued\":[],\"type\":\"tests\"},{\"added\":[],\"changed\":[{\"action\":\"change\",\"details\":\"3 null\",\"key\":\"OFI2004-200\",\"predecessors\":\"OFI2004-122\"}],\"discontinued\":[],\"type\":\"documentation chapters\"}],\"rational\":\"Modifications for project version '2.0'.\"},{\"entryId\":3,\"issueType\":[{\"added\":[],\"changed\":[{\"key\":\"OFI2004-245\",\"predecessors\":\"OFI2004-135\"}],\"discontinued\":[{\"action\":\"discontinue\",\"key\":\"OFI2004-130\"}],\"type\":\"requirements\"},{\"added\":[],\"changed\":[{\"key\":\"OFI2004-246\",\"predecessors\":\"OFI2004-138\"}],\"discontinued\":[{\"action\":\"discontinue\",\"key\":\"OFI2004-133\"}],\"type\":\"risks\"},{\"added\":[],\"changed\":[{\"key\":\"OFI2004-249\",\"predecessors\":\"OFI2004-136\"}],\"discontinued\":[{\"action\":\"discontinue\",\"key\":\"OFI2004-131\"}],\"type\":\"tests\"},{\"added\":[],\"changed\":[],\"discontinued\":[],\"type\":\"documentation chapters\"}],\"rational\":\"Modifications for project version '3.0'.\"},{\"entryId\":4,\"issueType\":[{\"added\":[{\"action\":\"add\",\"details\":\"3 Document History\",\"key\":\"OFI2004-122\"}],\"changed\":[],\"discontinued\":[],\"type\":\"documentation chapters\"}],\"rational\":\"Modifications for project version '1.0'. This document version invalidates the changes done in document versions '3, 2, 1'.\"}],\"sections\":{\"sec3\":{\"content\":\"<p><font color=\\\"blue\\\">The following table provides extra history of the document.</font></p>\\n\\n<div class='table-wrap'>\\n<table class='confluenceTable'><tbody>\\n<tr>\\n<th class='confluenceTh'>Version</th>\\n<th class='confluenceTh'>Date</th>\\n<th class='confluenceTh'>Author</th>\\n<th class='confluenceTh'>Reference</th>\\n</tr>\\n<tr>\\n<td class='confluenceTd'>&nbsp;</td>\\n<td class='confluenceTd'>See summary of electronic document or signature page of printout.</td>\\n<td class='confluenceTd'>&nbsp;</td>\\n<td class='confluenceTd'>&nbsp;</td>\\n</tr>\\n</tbody></table>\\n</div>\\n\",\"documents\":[\"TRC\"],\"heading\":\"Document History\",\"key\":\"OFI2004-122\",\"number\":\"3\",\"predecessors\":[],\"section\":\"sec3\",\"status\":\"To Do\",\"versions\":[\"1.0\"]},\"sec4\":{\"systemRequirements\":[]}}},\"metadata\":{\"buildParameter\":{\"configItem\":\"BI-IT-DEVSTACK\",\"projectKey\":\"OFI2004\",\"releaseStatusJiraIssueKey\":\"OFI2004-123\",\"targetEnvironment\":\"dev\",\"targetEnvironmentToken\":\"D\",\"version\":\"WIP\"},\"date_created\":\"${json-unit.any-string}\",\"description\":\"Description of ofi2004.\",\"git\":{\"author\":\"s2o\",\"baseTag\":\"ods-generated-v3.0-3.0-0b11-D\",\"commit\":\"1e84b5100e09d9b6c5ea1b6c2ccee8957391beec\",\"message\":\"Swingin' The Bottle\",\"targetTag\":\"ods-generated-v3.0-3.0-0b11-D\",\"time\":\"2021-04-20T14:58:31.042152\",\"url\":\"https://bitbucket/scm/ofi2004/ofi2004-release.git\"},\"header\":[\"Traceability Matrix, Config Item: BI-IT-DEVSTACK\",\"Doc ID/Version: see auto-generated cover page\"],\"id\":null,\"jenkins\":{\"buildNumber\":\"666\",\"buildUrl\":\"https://jenkins-sample\",\"jobName\":\"ofi2004-cd/ofi2004-cd-release-master\"},\"name\":\"Project ofi2004\",\"openShift\":{\"apiUrl\":\"https://openshift-sample\"},\"referencedDocs\":{\"CFTP\":\"BI-IT-DEVSTACK / 1-WIP\",\"CFTR\":\"BI-IT-DEVSTACK / 1-WIP\",\"CSD\":\"BI-IT-DEVSTACK / 1-WIP\",\"DTP\":\"BI-IT-DEVSTACK / 1-WIP\",\"DTR\":\"BI-IT-DEVSTACK / 1-WIP\",\"RA\":\"BI-IT-DEVSTACK / 1-WIP\",\"SSDS\":\"BI-IT-DEVSTACK / 1-WIP\",\"TIP\":\"BI-IT-DEVSTACK / 1-WIP\",\"TIR\":\"BI-IT-DEVSTACK / 1-WIP\",\"TRC\":\"BI-IT-DEVSTACK / 4-WIP\"},\"type\":\"Traceability Matrix\",\"version\":\"3.0\"}},\"metadata\":{\"type\":\"TRC\",\"version\":\"1.1\"}}",
+                "ignoreArrayOrder": true,
+                "ignoreExtraElements": true
+            }
+        ],
+        "method": "POST",
+        "url": "/document"
+    },
+    "response": {
+        "bodyFileName": "document-db50b02b-36c7-46b0-a2b3-e9e87092d170.json",
+        "headers": {
+            "Content-Type": "application/json;charset=UTF-8",
+            "Set-Cookie": "3138b0cabb03d83618b5583974d9b952=f9e522f117f6672361a365b0525fa61c; path=/; HttpOnly"
+        },
+        "status": 200
+    },
+    "uuid": "db50b02b-36c7-46b0-a2b3-e9e87092d170"
+}
