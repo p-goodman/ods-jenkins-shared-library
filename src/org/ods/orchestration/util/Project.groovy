@@ -1421,7 +1421,6 @@ class Project {
         this.resolveJiraDataItemReferences(data, JiraDataItem.TYPES)
     }
 
-    @NonCPS
     protected Map resolveJiraDataItemReferences(Map data, List<String> jiraTypes) {
         def result = [:]
 
