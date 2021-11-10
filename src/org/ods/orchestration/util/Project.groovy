@@ -1441,10 +1441,9 @@ class Project {
 
                         item[referenceType].eachWithIndex { referenceKey, index ->
                             result[type][key][referenceType][index] = data[referenceType][referenceKey]
-                            if (data[referenceType][referenceKey]) {
+                            data[referenceType][referenceKey] == null &&
                                 logger.debug("NULL-FOUND: type=${type}, key=${key}, referenceType=${referenceType}, " +
                                     "referenceKey=${referenceKey}")
-                            }
                         }
                     }
                 }
