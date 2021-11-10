@@ -1441,6 +1441,10 @@ class Project {
 
                         item[referenceType].eachWithIndex { referenceKey, index ->
                             result[type][key][referenceType][index] = data[referenceType][referenceKey]
+                            if (data[referenceType][referenceKey]) {
+                                logger.debug("NULL-FOUND: type=${type}, key=${key}, referenceType=${referenceType}, " +
+                                    "referenceKey=${referenceKey}")
+                            }
                         }
                     }
                 }
