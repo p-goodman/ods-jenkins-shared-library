@@ -573,6 +573,12 @@ class LeVADocumentUseCase extends DocGenUseCase {
         def risks = this.project.getRisks().collect { r ->
             def mitigationsText = this.replaceDashToNonBreakableUnicode(r.mitigations ? r.mitigations.join(", ") : "None")
             def testsText = this.replaceDashToNonBreakableUnicode(r.tests ? r.tests.join(", ") : "None")
+            r.getResolvedSystemRequirements().each {
+                logger.debug("DEBUG-NULL: story ${it?.key}")
+            }
+            r.getResolvedTechnicalSpecifications().each {
+                logger.debug("DEBUG-NULL: spec ${it?.key}")
+            }
             def requirements = (r.getResolvedSystemRequirements() + r.getResolvedTechnicalSpecifications())
             def gxpRelevance = obtainEnum("GxPRelevance", r.gxpRelevance)
             def probabilityOfOccurrence = obtainEnum("ProbabilityOfOccurrence", r.probabilityOfOccurrence)
@@ -585,8 +591,7 @@ class LeVADocumentUseCase extends DocGenUseCase {
                 name: r.name,
                 description: convertImages(r.description),
                 proposedMeasures: "Mitigations: ${mitigationsText}<br/>Tests: ${testsText}",
-                requirements: requirements.each { logger.debug("DEBUG-NULL: ${it.name}") }
-                    .collect { it.name }.join("<br/>"),
+                requirements: requirements.collect { it.name }.join("<br/>"),
                 requirementsKey: requirements.collect { it.key }.join("<br/>"),
                 gxpRelevance: gxpRelevance ? gxpRelevance."short" : "None",
                 probabilityOfOccurrence: probabilityOfOccurrence ? probabilityOfOccurrence."short" : "None",
