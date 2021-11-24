@@ -268,7 +268,7 @@ class LeVADocumentUseCase extends DocGenUseCase {
         return uri
     }
 
-    String createDTR(Map repo, Map data) {
+    String createDTR(Map repo, Map data, String repositoryIdOfUsedProject = '') {
         logger.debug("createDTR - repo:${repo}, data:${data}")
 
         def documentType = DocumentType.DTR as String
@@ -283,7 +283,8 @@ class LeVADocumentUseCase extends DocGenUseCase {
         def sections = this.getDocumentSectionsFileOptional(documentType)
         def watermarkText = this.getWatermarkText(documentType, this.project.hasWipJiraIssues())
 
-        def testIssues = this.project.getAutomatedTestsTypeUnit("Technology-${repo.id}")
+        def testIssues = this.project.getAutomatedTestsTypeUnit(
+            "Technology-${repositoryIdOfUsedProject ?: repo.id}")
         def discrepancies = this.computeTestDiscrepancies("Development Tests", testIssues, unitTestData.testResults)
 
         def obtainEnum = { category, value ->

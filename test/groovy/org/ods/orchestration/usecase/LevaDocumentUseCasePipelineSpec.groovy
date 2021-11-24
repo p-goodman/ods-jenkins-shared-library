@@ -39,8 +39,19 @@ class LevaDocumentUseCasePipelineSpec extends PipelineSpecBase {
     private static final boolean GENERATE_EXPECTED_PDF_FILES = Boolean.parseBoolean(System.properties["generateExpectedPdfFiles"])
     private static final String PROJECT_KEY = "OFI2004"
     private static final String PROJECT_KEY_RELEASE_ID = "207"
+    private static final String PROJECT_COMPONENT_REPOSITORY_ID = 'backend-first'
     private static final String SAVED_DOCUMENTS="build/reports/LeVADocs"
-
+    private static final Map<String, String> LINK_TESTS_IN_JIRA = ['testOk1': '132',
+                                                                   'testOk2': '137',
+                                                                   'testOk3': '138',
+                                                                   'testOk4': '139',
+                                                                   'testOk5': '140',
+                                                                   'testOk6': '141',
+                                                                   'testOk7': '142',
+                                                                   'testOk8': '143',
+                                                                   'testKo1': '144',
+                                                                   'testKo2': '145',
+                                                                   'testSkipped1': '146']
     @Rule
     EnvironmentVariables env = new EnvironmentVariables()
 
@@ -74,14 +85,38 @@ class LevaDocumentUseCasePipelineSpec extends PipelineSpecBase {
         useCase."create${doctype}"()
 
         then: "the generated PDF is as expected"
-        validatePDF(doctype, version)
+        String baseName = useCase.getDocumentBasename(doctype, version, "1")
+        validatePDF(baseName)
 
         where:
         doctype << [ "CSD", "DIL", "DTP", "RA",  "CFTP", "IVP", "SSDS", "TCP",  "TIP"]
         version = "WIP"
     }
 
-    // TODO docs with params:  "DTR",  "CFTR", "IVR",  "TCR", "TIR", "TRC"
+    // TODO docs with params:  "CFTR", "IVR",  "TCR", "TIR", "TRC"
+
+    @Unroll
+    def "create DTR"() {
+        given: "There's a LeVADocument service"
+        LeVADocumentUseCase useCase = getLeVADocumentUseCaseFactory(doctype, version)
+            .loadProject(setBuildParams(version))
+            .createLeVADocumentUseCase()
+
+        when: "the user creates a LeVA document"
+        def data = getTestResult(useCase, LINK_TESTS_IN_JIRA)
+        def repo = useCase.project.repositories.first()
+        useCase.createDTR(repo, data, PROJECT_COMPONENT_REPOSITORY_ID)
+
+        then: "the generated PDF is as expected"
+        String baseName = useCase.getDocumentBasename(doctype, version, '1', repo)
+        validatePDF(baseName)
+
+        where:
+        doctype << [ "DTR" ]
+        version = "WIP"
+    }
+
+
 
     @Ignore // until DTR", "TIR" are done
     @Unroll
@@ -134,36 +169,64 @@ class LevaDocumentUseCasePipelineSpec extends PipelineSpecBase {
             bitbucketTraceabilityUseCase)
     }
 
-    private boolean validatePDF(doctype, version, oveAllPrefix = "") {
-        unzipGeneratedArtifact(doctype, version)
+    private Map<String, Map<String, Map<String, Cloneable>>> getTestResult(LeVADocumentUseCase useCase, Map<String, String> linkTestsInJira) {
+        def xmlJUnitTest = new FixtureHelper().getResource("jUnitTestResult.xml")
+        def testReportFiles = [xmlJUnitTest]
+        def testResults = new JUnitTestReportsUseCase(useCase.project, useCase.steps)
+            .parseTestReportFiles(testReportFiles, linkTestsInJira)
+        Map data = [
+            tests: [
+                acceptance  : [
+                    testReportFiles: testReportFiles,
+                    testResults    : testResults
+                ],
+                installation: [
+                    testReportFiles: testReportFiles,
+                    testResults    : testResults
+                ],
+                integration : [
+                    testReportFiles: testReportFiles,
+                    testResults    : testResults
+                ],
+                unit : [
+                    testReportFiles: testReportFiles,
+                    testResults    : testResults
+                ]
+            ]
+        ]
+        return data
+    }
+
+    private boolean validatePDF(baseName, oveAllPrefix = "") {
+        unzipGeneratedArtifact(baseName)
         if (GENERATE_EXPECTED_PDF_FILES) {
-            copyDocWhenRecording(doctype, version, oveAllPrefix)
+            copyDocWhenRecording(baseName, oveAllPrefix)
             return true
         } else {
-            def actualDoc = actualDoc(doctype, version)
-            def expectedDoc = expectedDoc(doctype, version, oveAllPrefix)
+            def actualDoc = actualDoc(baseName)
+            def expectedDoc = expectedDoc(baseName, oveAllPrefix)
             return new PdfCompare(SAVED_DOCUMENTS).compare(actualDoc.absolutePath, expectedDoc.absolutePath)
         }
     }
 
-    private File actualDoc(doctype, version) {
-        new File("${tempFolder.getRoot()}/${doctype}-${PROJECT_KEY}-${version}-1.pdf")
+    private File actualDoc(baseName) {
+        new File("${tempFolder.getRoot()}/${baseName}.pdf")
     }
 
-    private Object unzipGeneratedArtifact(doctype, version) {
+    private Object unzipGeneratedArtifact(baseName) {
         new AntBuilder().unzip(
-            src: "${tempFolder.getRoot()}/workspace/artifacts/${doctype}-${PROJECT_KEY}-${version}-1.zip",
+            src: "${tempFolder.getRoot()}/workspace/artifacts/${baseName}.zip",
             dest: "${tempFolder.getRoot()}",
             overwrite: "true")
     }
 
-    private File expectedDoc(doctype, version, oveAllPrefix) {
-        new FixtureHelper().getResource("expected/${this.class.simpleName}/${oveAllPrefix}${doctype}-${PROJECT_KEY}-${version}-1.pdf")
+    private File expectedDoc(baseName, oveAllPrefix) {
+        new FixtureHelper().getResource("expected/${this.class.simpleName}/${oveAllPrefix}${baseName}.pdf")
     }
 
-    private void copyDocWhenRecording(doctype, version, oveAllPrefix) {
-        def expectedDoc = new File("test/resources/expected/${this.class.simpleName}/${oveAllPrefix}${doctype}-${PROJECT_KEY}-${version}-1.pdf")
-        FileUtils.copyFile(actualDoc(doctype, version), expectedDoc)
+    private void copyDocWhenRecording(baseName, oveAllPrefix) {
+        def expectedDoc = new File("test/resources/expected/${this.class.simpleName}/${oveAllPrefix}${baseName}.pdf")
+        FileUtils.copyFile(actualDoc(baseName), expectedDoc)
     }
 
     def setBuildParams(version){

@@ -1,7 +1,7 @@
 package org.ods.orchestration.usecase
 
 import com.cloudbees.groovy.cps.NonCPS
-
+import groovy.text.GStringTemplateEngine
 import org.ods.orchestration.parser.JUnitParser
 import org.ods.util.IPipelineSteps
 import org.ods.orchestration.util.Project
@@ -51,16 +51,26 @@ class JUnitTestReportsUseCase {
     }
 
     @NonCPS
-    Map parseTestReportFiles(List<File> files) {
+    Map parseTestReportFiles(List<File> files, Map<String, String> linkTestsInJira = [:]) {
         List<Map> testResults = []
         for (def i = 0; i < files.size(); i++) {
-            testResults.add(JUnitParser.parseJUnitXML(files[i].text))
+            testResults.add(JUnitParser.parseJUnitXML(replaceTestIDsInFile(files[i], linkTestsInJira)))
         }
         return this.combineTestResults(testResults)
     }
 
     void reportTestReportsFromPathToJenkins(String path) {
         this.steps.junit("${path}/**/*.xml")
+    }
+
+    private String replaceTestIDsInFile(File file, Map<String, String> linkTestsInJira = [:]) {
+        if (linkTestsInJira) {
+            Map<String, String> bindMap = linkTestsInJira.clone()
+            bindMap.put('project', project.key)
+            def content = new GStringTemplateEngine().createTemplate(file).make(bindMap)
+            file.text = content.toString()
+        }
+        return file.text
     }
 
 }
