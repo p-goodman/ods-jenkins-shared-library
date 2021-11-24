@@ -93,13 +93,13 @@ class WiremockManager {
 
     private void updateDateCreated(File file) {
         JsonBuilder jsonBuilderFromFile = getJsonFromText(file.text)
-        String equalToJsonField = jsonBuilderFromFile.content?.request?.bodyPatterns?.equalToJson
-        if (!equalToJsonField)
+        String equalToJsonField = jsonBuilderFromFile.content?.request?.bodyPatterns[0]?.equalToJson
+        if (!equalToJsonField) {
             return
-
+        }
         JsonBuilder jsonBuilderFromEqualToJsonField = getJsonFromText(equalToJsonField)
 
-        jsonBuilderFromEqualToJsonField.content[0].data.metadata.date_created = "\${json-unit.any-string}"
+        jsonBuilderFromEqualToJsonField.content.data.metadata.date_created = "\${json-unit.any-string}"
         jsonBuilderFromFile.content.request.bodyPatterns[0].equalToJson = jsonBuilderFromEqualToJsonField.toString()
 
         file.text = JsonOutput.prettyPrint(jsonBuilderFromFile.toString())
