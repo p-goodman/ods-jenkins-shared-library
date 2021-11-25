@@ -4,6 +4,7 @@ package org.ods.services
 
 import com.cloudbees.groovy.cps.NonCPS
 import kong.unirest.Unirest
+import kong.unirest.ContentType
 import org.apache.http.client.utils.URIBuilder
 
 class NexusService {
@@ -99,7 +100,7 @@ class NexusService {
 
         restCall = restCall.field(
             repositoryType == 'raw' || repositoryType == 'maven2' ? "${repositoryType}.asset1" : "${repositoryType}.asset",
-            new ByteArrayInputStream(artifact), contentType)
+            new ByteArrayInputStream(artifact), ContentType.create(contentType), "datafactory_processor-0.2.0-py3-none-any.whl")
 
         def response = restCall.asString()
         response.ifSuccess {
